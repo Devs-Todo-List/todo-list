@@ -31,10 +31,4 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/liquibase-cd.yaml  
 
-  release-cd:
-    name: "Deploy NodeJS API"
-    needs: database-migration
-    secrets: inherit
-    uses: ./.github/workflows/deploy.yaml 
-
 
