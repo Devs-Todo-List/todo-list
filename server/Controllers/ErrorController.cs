@@ -7,7 +7,6 @@ namespace server.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     [Route("error")]
     [ApiController]
-    [AllowAnonymous]
     public class ErrorController : ControllerBase
     {
         public IActionResult HandleError()

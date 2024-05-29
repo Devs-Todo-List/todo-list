@@ -11,7 +11,6 @@ namespace server.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    [AllowAnonymous]
     public class UserController(UserRepository userRepository) : ControllerBase
     {
         [HttpGet]

@@ -10,7 +10,6 @@ namespace server.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-[AllowAnonymous]
 public class TaskTypeController(TaskTypeRepository taskTypeRepository) : ControllerBase
 {
     [HttpGet]
