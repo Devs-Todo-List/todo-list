@@ -92,9 +92,7 @@ namespace server.Controllers
 
             var claims = new List<Claim>()
             {
-                new Claim("username", username),/*
-                new Claim("name", username),
-                new Claim("aud", jwtOptions.Audience)*/
+                new Claim("username", username),
             };
 
             var roleClaims = permissions.Select(x => new Claim("role", x));
