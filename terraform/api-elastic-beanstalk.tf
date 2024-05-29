@@ -77,12 +77,67 @@ resource "aws_elastic_beanstalk_environment" "api_env" {
   setting {
     namespace = "aws:elasticbeanstalk:environment"
     name      = "EnvironmentType"
-    value     = "SingleInstance"
+    value     = "LoadBalanced"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elasticbeanstalk:environment"
+    name      = "LoadBalancerType"
+    value     = "application"
+    resource  = ""
   }
   setting {
     namespace = "aws:elasticbeanstalk:managedactions"
     name      = "ManagedActionsEnabled"
     value     = "false"
+  }
+  # setting {
+  #   namespace = "aws:elbv2:listener:443"
+  #   name      = "ListenerEnabled"
+  #   value     = "true"
+  #   resource  = ""
+  # }
+  # setting {
+  #   namespace = "aws:elbv2:listener:443"
+  #   name      = "Protocol"
+  #   value     = "HTTPS"
+  #   resource  = ""
+  # }
+  # setting {
+  #   namespace = "aws:elbv2:listener:443"
+  #   name      = "SSLCertificateArns"
+  #   value     = < INSERT CERTIFICATE ARN HERE >
+  #   resource  = ""
+  # }
+  # setting {
+  #   namespace = "aws:ec2:vpc"
+  #   name      = "AssociatePublicIpAddress"
+  #   value     = "true"
+  #   resource  = ""
+  # }
+    setting {
+    namespace = "aws:elb:healthcheck"
+    name      = "Interval"
+    value     = 30
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elb:healthcheck"
+    name      = "Timeout"
+    value     = 15
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:autoscaling:asg"
+    name      = "MinSize"
+    value     = 1
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:autoscaling:asg"
+    name      = "MaxSize"
+    value     = 1
+    resource  = ""
   }
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
