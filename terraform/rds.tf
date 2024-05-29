@@ -10,7 +10,7 @@ module "rds" {
   major_engine_version = "15.00"             # DB option group
 
 
-  
+
   instance_class      = "db.t3.micro"
   create_db_instance  = true
   allocated_storage   = 20
@@ -20,7 +20,7 @@ module "rds" {
   max_allocated_storage = 20
 
   storage_encrypted = false
-  
+
   db_subnet_group_name   = module.vpc.database_subnet_group_name
   vpc_security_group_ids = [aws_security_group.rds.id]
   publicly_accessible    = true
