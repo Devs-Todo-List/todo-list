@@ -1,5 +1,4 @@
-﻿using DevDoListServer.Data;
-using server.Models;
+﻿using server.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace server.Data;

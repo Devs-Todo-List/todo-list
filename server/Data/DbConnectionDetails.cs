@@ -1,4 +1,4 @@
-﻿namespace DevDoListServer.Data
+﻿namespace server.Data
 {
     public class DbConnectionDetails(string connectionString)
     {
