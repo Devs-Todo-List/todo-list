@@ -1,0 +1,72 @@
+.kanban {
+    display: flex;
+    align-items: flex-start;
+
+    &__section {
+        width: 30%;
+        background-color: rgb(108, 108, 179);
+        padding: 10px;
+        border-radius: 10px;
+        transition: transform 0.3s ease-in-out;
+        display: block;
+        text-align: center;
+        min-height:70vh;
+
+        & ~ & {
+            margin-left: 10px;
+        }
+
+        &__title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 4% 0 4%;
+        }
+
+        &__content {
+            & > * ~ * {
+                margin-top: 10px;
+            }
+        }
+
+        &.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            width: 100%;
+            display: none;
+
+            &.active {
+                display: block;
+            }
+
+            & ~ & {
+                margin-left: 0;
+            }
+        }
+    }
+
+    &__pagination {
+        display: none;
+        justify-content: center;
+        margin-top: 10px;
+
+        @media (max-width: 768px) {
+            display: flex;
+        }
+
+        &__indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: grey;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+
+            &.active {
+                background-color: black;
+            }
+        }
+    }
+}

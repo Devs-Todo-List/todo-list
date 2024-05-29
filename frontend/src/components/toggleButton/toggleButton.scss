@@ -1,0 +1,16 @@
+.toggle-button {
+    position: absolute;
+    top: 2%;
+    left: -90%;
+    cursor: pointer;
+    font-size: 24px;
+    color: #ffc107; // Color for the sun icon
+    margin-left: 95%;
+    &:hover {
+        color: #ffeb3b; // Lighter shade on hover
+    }
+
+    .fa-moon {
+        color: #ffffff; // Color for the moon icon
+    }
+}

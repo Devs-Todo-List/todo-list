@@ -33,3 +33,5 @@ override.tf.json
 .terraformrc
 terraform.rc
 bootstrap/.terraform.lock.hcl
+/frontend/node_modules
+frontend/package-lock.json

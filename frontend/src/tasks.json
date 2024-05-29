@@ -1,0 +1,23 @@
+[
+    {
+        "id": "section-1",
+        "title": "To Do",
+        "tasks": [
+            {
+                "id": "task-1",
+                "title": "Task 1",
+                "description": "Description of Task 1"
+            }
+        ]
+    },
+    {
+        "id": "section-2",
+        "title": "In Progress",
+        "tasks": []
+    },
+    {
+        "id": "section-3",
+        "title": "Done",
+        "tasks": []
+    }
+]
