@@ -32,7 +32,7 @@ jobs:
 
       - name: Fetch AWS RDS endpoint
         run: |
-          echo "DB_URL=jdbc:sqlserver://$(aws rds describe-db-instances --db-instance-identifier devtodolistdb --query 'DBInstances[0].Endpoint.Address' --output text):5432;databaseName=devtodolistdb;encrypt=true;trustServerCertificate=true" >> $GITHUB_ENV
+          echo "DB_URL=jdbc:sqlserver://$(aws rds describe-db-instances --db-instance-identifier devtodolistdb --query 'DBInstances[0].Endpoint.Address' --output text):1433;databaseName=devtodolistdb;encrypt=true;trustServerCertificate=true" >> $GITHUB_ENV
 
     
       - name: Perform migration

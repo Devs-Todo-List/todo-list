@@ -5,7 +5,7 @@ module "rds" {
   identifier = "devtodolistdb"
 
   engine               = "sqlserver-ex"
-  engine_version       = "15.00"
+  engine_version       = "15.00.4345.5.v1"
   family               = "sqlserver-ex-15.0" # DB parameter group
   major_engine_version = "15.00"             # DB option group
 
@@ -27,7 +27,7 @@ module "rds" {
 
   # db_name                                                = local.db-name
   username                                               = "dbadmin"
-  port                                                   = "5432"
+  port                                                   = "1433"
   manage_master_user_password                            = true
   manage_master_user_password_rotation                   = true
   master_user_password_rotation_automatically_after_days = 30
