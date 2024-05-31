@@ -32,12 +32,13 @@ jobs:
 
       - name: Fetch AWS RDS endpoint
         run: |
-          echo "DB_ENDPOINT=$(aws rds describe-db-instances --db-instance-identifier devtodolistdb --query 'DBInstances[0].Endpoint.Address' --output text)" >> $GITHUB_ENV
+          echo "DB_URL=jdbc:sqlserver://$(aws rds describe-db-instances --db-instance-identifier devtodolistdb --query 'DBInstances[0].Endpoint.Address' --output text):1433;databaseName=devtodolistdb;encrypt=true;trustServerCertificate=true;instance=sqlexpress" >> $GITHUB_ENV
+
     
       - name: Perform migration test
         uses: liquibase-github-actions/validate@v4.26.0
         with:
-          changelogFile: "./database/changelog.yaml"
-          url: "jdbc:postgresql://${{ env.DB_ENDPOINT }}:5432/devtodolistdb"
-          password: "${{ env.DB_DETAILS_PASSWORD }}"
-          username: "${{ env.DB_DETAILS_USERNAME }}"
+            changelogFile: "./database/changelog.yaml"
+            url: "${{ env.DB_URL }}"
+            password: "${{ env.DB_DETAILS_PASSWORD }}"
+            username: "${{ env.DB_DETAILS_USERNAME }}"
