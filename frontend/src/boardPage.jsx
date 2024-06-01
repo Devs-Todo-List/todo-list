@@ -89,12 +89,32 @@ function App() {
             return {
                 ...section,
                 tasks: section.tasks.map(task => {
-                    if (task.id === selectedTask.id) {
+                    if (task.taskId === selectedTask.taskId) {
                         return selectedTask;
                     }
                     return task;
                 })
             };
+        });
+        
+        fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${selectedTask.taskId}`,
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
+            },
+            body: JSON.stringify({
+                taskId: selectedTask.taskId,
+                title: selectedTask.title,
+                description: selectedTask.description,
+                dateCreated: selectedTask.dateCreated,
+                dueDate: selectedTask.dueDate,
+                userId: selectedTask.userId,
+                statusId: selectedTask.statusId,
+                taskTypeId: selectedTask.taskTypeId
+            })
         });
 
         setData(updatedData);
