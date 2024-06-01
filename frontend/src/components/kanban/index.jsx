@@ -7,6 +7,8 @@ import './kanban.scss';
 const Kanban = ({ data, setData, onTaskClick }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
+    console.log("Kanban", data);
+
     const onDragEnd = result => {
         if (!result.destination) return;
         const { source, destination } = result;
