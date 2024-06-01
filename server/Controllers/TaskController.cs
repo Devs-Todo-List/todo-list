@@ -23,7 +23,7 @@ namespace server.Controllers
             var statuses = await statusRepository.GetAll();
             var ans = statuses.Select(s => new
             {
-                id = $"section-{s.StatusId.ToString()}" ,
+                id = s.StatusId.ToString() ,
                 title = s.StatusType,
                 tasks = userTasks.Where(ut => ut.StatusId == s.StatusId).ToList()
             });
