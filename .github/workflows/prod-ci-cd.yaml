@@ -31,4 +31,8 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/liquibase-cd.yaml  
 
-
+  release-cd:
+    name: "Deploy/Release API"
+    needs: database-migration
+    secrets: inherit
+    uses: ./.github/workflows/deploy-cd.yaml 
