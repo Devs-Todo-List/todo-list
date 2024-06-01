@@ -6,7 +6,6 @@ using System.Text.Json;
 using server.Jwt;
 using server.Models;
 using server.Models.Dtos;
-using server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,7 +16,7 @@ namespace server.Controllers
     [Route("api/v1/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class AuthController(JwtOptions jwtOptions, AuthService authService) : ControllerBase
+    public class AuthController(JwtOptions jwtOptions) : ControllerBase
     {
         [HttpPost]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(JwtDto))]
@@ -59,21 +58,22 @@ namespace server.Controllers
             }
             var responseString = await response.Content.ReadAsStringAsync();
             var githubUser = JsonSerializer.Deserialize<GithubUser>(responseString)!;
-            var role = await authService.AuthenticateUser(githubUser);
-            var tokenExpiration = TimeSpan.FromSeconds(jwtOptions.ExpirationSeconds);
-            var accessToken = CreateAccessToken(
-                jwtOptions,
-                githubUser.login,
-                TimeSpan.FromMinutes(1440),
-                new[] { role });
-
-            //returns a json response with the access token
-            return Ok(new JwtDto
-            {
-                access_token = accessToken,
-                expiration = (int)tokenExpiration.TotalSeconds,
-                type = "bearer"
-            });
+            // var role = await authService.AuthenticateUser(githubUser);
+            // var tokenExpiration = TimeSpan.FromSeconds(jwtOptions.ExpirationSeconds);
+            // var accessToken = CreateAccessToken(
+            //     jwtOptions,
+            //     githubUser.login,
+            //     TimeSpan.FromMinutes(1440),
+            //     new[] { role });
+            //
+            // //returns a json response with the access token
+            // return Ok(new JwtDto
+            // {
+            //     access_token = accessToken,
+            //     expiration = (int)tokenExpiration.TotalSeconds,
+            //     type = "bearer"
+            // });
+            return BadRequest();
         }
 
         private string CreateAccessToken(

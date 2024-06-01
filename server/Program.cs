@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using server;
 using server.Data;
 using server.Repositories;
-using server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,8 +25,6 @@ builder.Services.AddSingleton(dbConnectionDetails);
 builder.Services.AddDbContext<AppDbContext>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<StatusRepository>();
-builder.Services.AddScoped<RoleRepository>();
-builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TaskTypeRepository>();
 builder.Services.AddScoped<TaskRepository>();
 builder.Services.AddScoped<CommentRepository>();
@@ -36,7 +33,7 @@ builder.Services.AddScoped<CommentRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
-        var clientId = Environment.GetEnvironmentVariable("COGNITO_CLIENTID")!;
+        var clientId = Environment.GetEnvironmentVariable("USERPOOL_CLIENTID")!;
         opts.Authority = $"https://cognito-idp.eu-west-1.amazonaws.com/{clientId}";
         opts.MetadataAddress = $"https://cognito-idp.eu-west-1.amazonaws.com/{clientId}/.well-known/openid-configuration";
         opts.IncludeErrorDetails = true;

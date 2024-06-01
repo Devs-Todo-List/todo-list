@@ -11,7 +11,6 @@ public class UserDto
         UserId = user.UserId;
         Username = user.Username;
         UserPicUrl = user.UserPicUrl;
-        RoleId = user.RoleId;
     }
 
     public int UserId { get; set; }
@@ -28,8 +27,7 @@ public class UserDto
         {
             UserId = UserId,
             Username = Username,
-            UserPicUrl = UserPicUrl,
-            RoleId = RoleId
+            UserPicUrl = UserPicUrl
         };
     }
 }
