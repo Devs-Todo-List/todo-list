@@ -29,7 +29,12 @@ builder.Services.AddScoped<TaskTypeRepository>();
 builder.Services.AddScoped<TaskRepository>();
 builder.Services.AddScoped<CommentRepository>();
 
-
+builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+{
+    builder.WithOrigins("*")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+}));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
@@ -73,6 +78,7 @@ app.MapGet("/test", () => {
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors("MyPolicy");
 
 app.UseExceptionHandler("/error");
 app.MapControllers().RequireAuthorization();

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -10,72 +10,58 @@ const LoginPage = () => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    try
-    {
-      const response = await fetch(`${process.env.API_URL}/api/v1/Auth/signIn`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Accept: 'application/json',
-        },
-        body: {
-          "username": email,
-          "password": password
-        }
-      });
-      
-      const session = await response.json();
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/signIn`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            "username": email,
+            "password": password
+          })
+        });
 
-      if (session && typeof session.AccessToken !== 'undefined')
-      {
-        sessionStorage.setItem('accessToken', session.AccessToken);
-        if (sessionStorage.getItem('accessToken'))
-        {
+      const session = await response.json();
+      if (session && typeof session.authenticationResult.accessToken !== 'undefined') {
+        sessionStorage.setItem('accessToken', session.authenticationResult.accessToken);
+        if (sessionStorage.getItem('accessToken')) {
           window.location.href = '/home';
-        }
-        else
-        {
+        } else {
           console.error('Session token was not set properly.');
         }
-      }
-      else
-      {
+      } else {
         console.error('SignIn session or AccessToken is undefined.');
       }
-    }
-    catch (error)
-    {
+    } catch (error) {
       alert(`Sign in failed: ${error}`);
     }
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword)
-    {
+    if (password !== confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    try
-    {
-      await fetch(`${process.env.API_URL}/api/v1/Auth/signUp`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Accept: 'application/json',
-        },
-        body: {
-          "username": email,
-          "password": password
-        }
-      });
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/signUp`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            "username": email,
+            "password": password
+          })
+        });
 
-      navigate('/confirm', { state: { email } });
-    }
-    catch (error)
-    {
+      navigate('/confirm', {state: {email}});
+    } catch (error) {
       alert(`Sign up failed: ${error}`);
     }
   };
