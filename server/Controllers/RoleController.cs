@@ -60,7 +60,7 @@ public class RoleController(RoleRepository roleRepository) : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = RoleType.Admin)]
+    [Authorize(Policy = RoleType.Admin)]
     [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(RoleResponseDto))]
     public async Task<ActionResult<RoleResponseDto>> PostRole([FromBody] RoleCreateDto roleCreateDto)
     {
