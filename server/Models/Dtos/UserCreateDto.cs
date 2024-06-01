@@ -13,8 +13,7 @@ public class UserCreateDto
         return new User
         {
             Username = Username,
-            UserPicUrl = UserPicUrl,
-            RoleId = RoleId
+            UserPicUrl = UserPicUrl
         };
     }
 }
