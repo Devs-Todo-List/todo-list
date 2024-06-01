@@ -33,9 +33,9 @@ builder.Services.AddScoped<CommentRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
-        var clientId = Environment.GetEnvironmentVariable("USERPOOL_CLIENTID")!;
-        opts.Authority = $"https://cognito-idp.eu-west-1.amazonaws.com/{clientId}";
-        opts.MetadataAddress = $"https://cognito-idp.eu-west-1.amazonaws.com/{clientId}/.well-known/openid-configuration";
+        var userPoolId = Environment.GetEnvironmentVariable("USERPOOL_ID")!;
+        opts.Authority = $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}";
+        opts.MetadataAddress = $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
         opts.IncludeErrorDetails = true;
         opts.RequireHttpsMetadata = false;
         opts.TokenValidationParameters = new TokenValidationParameters
