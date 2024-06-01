@@ -31,7 +31,7 @@
         display: flex;
         align-items: center;
         margin: 20px 0;
-        margin-top: 20%;
+        margin-top: 2%;
 
         .user-name {
             margin-left: 10px;
@@ -48,6 +48,7 @@
         font-size: 16px;
         border-radius: 5px;
         transition: background-color 0.2s ease-in-out;
+        margin-top: 15%;
 
         &:hover {
             background-color: #ff1f3a;
@@ -68,6 +69,6 @@
 
 @media (max-width: 480px) {
     .drawer {
-        width: 100%;
+        width: 50%;
     }
 }

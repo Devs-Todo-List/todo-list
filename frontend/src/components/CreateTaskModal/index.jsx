@@ -1,4 +1,3 @@
-// CreateTaskModal.js
 import React from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -15,6 +14,16 @@ const CreateTaskModal = ({
     setSelectedSection,
     sections
 }) => {
+    const modules = {
+        toolbar: [
+            [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+            [{ size: [] }],
+            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+            [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+            ['clean']
+        ]
+    };
+
     return (
         <div className="modal" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -30,6 +39,7 @@ const CreateTaskModal = ({
                         value={newTaskDescription}
                         onChange={setNewTaskDescription}
                         placeholder="Task Description"
+                        modules={modules}
                     />
                 </div>
                 <select

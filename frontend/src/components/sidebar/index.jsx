@@ -1,12 +1,32 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle, faSignOutAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import ToggleButton from '../toggleButton';
 import './sidebar.scss';
 
 const Sidebar = ({ isOpen, toggleDrawer, toggleMode, isDarkMode, user }) => {
+    const sidebarRef = useRef(null);
+
+    const handleClickOutside = (event) => {
+        if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+            toggleDrawer();
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+        
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
+
     return (
-        <div className={`drawer ${isOpen ? 'open' : ''}`} role="navigation" aria-label="Sidebar">
+        <div ref={sidebarRef} className={`drawer ${isOpen ? 'open' : ''}`} role="navigation" aria-label="Sidebar">
             {isOpen && (
                 <>
                     <button className="menu-btn" onClick={toggleDrawer} aria-label="Close sidebar">
