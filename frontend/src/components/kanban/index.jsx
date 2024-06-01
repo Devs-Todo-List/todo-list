@@ -72,14 +72,7 @@ const Kanban = ({ data, setData, onTaskClick }) => {
                         statusId: destinationCol.id,
                         taskTypeId: data.taskTypeId
                     })
-                })
-                .then(response => {
-                    if(!response.ok)
-                        throw new Error("Error");
-
-                    return response.json();
-                })
-                .then(data => setData(data));
+                });
             })
             .catch(error => console.log(error));
 

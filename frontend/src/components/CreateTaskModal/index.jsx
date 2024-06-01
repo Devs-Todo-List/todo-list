@@ -12,6 +12,8 @@ const CreateTaskModal = ({
     setNewTaskDescription,
     selectedSection,
     setSelectedSection,
+    newDueDate,
+    setNewDueDate,
     sections
 }) => {
     const modules = {
@@ -42,6 +44,12 @@ const CreateTaskModal = ({
                         modules={modules}
                     />
                 </div>
+                <h5>Due Date</h5>
+                <input
+                    type="date"
+                    value={newDueDate}
+                    onChange={(e) => setNewDueDate(new Date(e.target.value).toISOString())}
+                />
                 <select
                     value={selectedSection}
                     onChange={(e) => setSelectedSection(e.target.value)}

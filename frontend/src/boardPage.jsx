@@ -20,7 +20,8 @@ function App() {
     const [isViewEditModalOpen, setIsViewEditModalOpen] = useState(false);
     const [newTaskTitle, setNewTaskTitle] = useState('');
     const [newTaskDescription, setNewTaskDescription] = useState('');
-    const [selectedSection, setSelectedSection] = useState('section-1');
+    const [selectedSection, setSelectedSection] = useState('1');
+    const [newDueDate, setNewDueDate] = useState(null);
     const [selectedTask, setSelectedTask] = useState(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -57,25 +58,49 @@ function App() {
     };
 
     const handleCreateTask = () => {
-        const newTask = {
-            id: `task-${Date.now()}`,
-            title: newTaskTitle,
-            description: newTaskDescription
-        };
+        // const newTask = {
+        //     id: `task-${Date.now()}`,
+        //     title: newTaskTitle,
+        //     description: newTaskDescription
+        // };
 
-        const updatedData = data.map(section => {
-            if (section.id === selectedSection) {
-                return {
-                    ...section,
-                    tasks: [...section.tasks, newTask]
-                };
-            }
-            return section;
+        // const updatedData = data.map(section => {
+        //     if (section.id === selectedSection) {
+        //         return {
+        //             ...section,
+        //             tasks: [...section.tasks, newTask]
+        //         };
+        //     }
+        //     return section;
+        // });
+
+        console.log(newTaskTitle);
+        // const des = newTaskDescription.slice(3,-4);
+        // console.log(des);
+        console.log(newDueDate);
+        console.log(selectedSection);
+        fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
+            },
+            body: JSON.stringify({
+                title: newTaskTitle,
+                description: newTaskDescription,
+                dateCreated: new Date().toISOString,
+                dueDate: newDueDate,
+                userId: 1,
+                statusId: selectedSection,
+                taskTypeId: 1
+            })
         });
-
-        setData(updatedData);
+        //setData(updatedData);
         setNewTaskTitle('');
         setNewTaskDescription('');
+        setNewDueDate(Date.now);
         setIsCreateModalOpen(false);
     };
 
@@ -159,7 +184,10 @@ function App() {
                     setNewTaskDescription={setNewTaskDescription}
                     selectedSection={selectedSection}
                     setSelectedSection={setSelectedSection}
+                    newDueDate={newDueDate}
+                    setNewDueDate={setNewDueDate}
                     sections={data}
+
                 />
             )}
             {isViewEditModalOpen && selectedTask && (
