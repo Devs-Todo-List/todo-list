@@ -1,9 +1,5 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signIn, signUp } from './authService';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -14,34 +10,72 @@ const LoginPage = () => {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    try {
-      const session = await signIn(email, password);
-      console.log('Sign in successful', session);
-      if (session && typeof session.AccessToken !== 'undefined') {
+    try
+    {
+      const response = await fetch(`${process.env.API_URL}/api/v1/Auth/signIn`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+        },
+        body: {
+          "username": email,
+          "password": password
+        }
+      });
+      
+      const session = await response.json();
+
+      if (session && typeof session.AccessToken !== 'undefined')
+      {
         sessionStorage.setItem('accessToken', session.AccessToken);
-        if (sessionStorage.getItem('accessToken')) {
+        if (sessionStorage.getItem('accessToken'))
+        {
           window.location.href = '/home';
-        } else {
+        }
+        else
+        {
           console.error('Session token was not set properly.');
         }
-      } else {
+      }
+      else
+      {
         console.error('SignIn session or AccessToken is undefined.');
       }
-    } catch (error) {
+    }
+    catch (error)
+    {
       alert(`Sign in failed: ${error}`);
     }
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+    if (password !== confirmPassword)
+    {
       alert('Passwords do not match');
       return;
     }
-    try {
-      await signUp(email, password, "user");
+    try
+    {
+      await fetch(`${process.env.API_URL}/api/v1/Auth/signUp`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+        },
+        body: {
+          "username": email,
+          "password": password
+        }
+      });
+
       navigate('/confirm', { state: { email } });
-    } catch (error) {
+    }
+    catch (error)
+    {
       alert(`Sign up failed: ${error}`);
     }
   };

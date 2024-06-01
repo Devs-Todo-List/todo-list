@@ -4,8 +4,8 @@ const querystring = require('querystring');
 const app = express();
 const PORT = 5000;
 
-const clientID = 'Ov23litREnfGTQv00wbA';
-const clientSecret = '5a7405a193caecd800be9cae129efee6197234e3';
+const clientID = '';
+const clientSecret = '';
 
 app.get('/auth/github', (req, res) => {
   const redirect_uri = `https://github.com/login/oauth/authorize?client_id=${clientID}&scope=repo,read:org`;

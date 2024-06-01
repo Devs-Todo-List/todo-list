@@ -1,21 +1,29 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
-
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { confirmSignUp } from './authService';
 
 const ConfirmUserPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // eslint-disable-next-line
+
   const [email, setEmail] = useState(location.state?.email || '');
   const [confirmationCode, setConfirmationCode] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await confirmSignUp(email, confirmationCode);
+      await fetch(`${process.env.API_URL}/api/v1/Auth/confirmSignup`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+        },
+        body: {
+          "username": email,
+          "code": confirmationCode
+        }
+      });
+
       alert("Account confirmed successfully!\nSign in on next page.");
       navigate('/login');
     } catch (error) {
