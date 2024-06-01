@@ -36,6 +36,53 @@ const Kanban = ({ data, setData, onTaskClick }) => {
                 tasks: destinationTask
             };
 
+            console.log(result);
+
+            fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${result.draggableId}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
+                }
+            })
+            .then(response => {
+                if(!response.ok)
+                    throw new Error("Error");
+
+                return response.json();
+            })
+            .then(data => {
+                fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${result.draggableId}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
+                    },
+                    body: JSON.stringify({
+                        taskId: data.taskId,
+                        title: data.title,
+                        description: data.description,
+                        dateCreated: data.dateCreated,
+                        dueDate: data.dueDate,
+                        userId: data.userId,
+                        statusId: destinationCol.id,
+                        taskTypeId: data.taskTypeId
+                    })
+                })
+                .then(response => {
+                    if(!response.ok)
+                        throw new Error("Error");
+
+                    return response.json();
+                })
+                .then(data => setData(data));
+            })
+            .catch(error => console.log(error));
+
             setData(updatedData);
         }
     };
