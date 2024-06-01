@@ -25,25 +25,23 @@ function App() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     useEffect(() => {
-        async function fetchTasks()
+        fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
         {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
-            {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-            }
-            });
-
-            const data = await response.json();
-            console.log(data);
-            setData(data);
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
         }
+        })
+        .then(response => {
+            if(!response.ok)
+                throw new Error("Error");
 
-        fetchTasks();
-        
+            return response.json();
+        })
+        .then(data => setData(data))
+        .catch(error => console.log(error));        
     }, []);
 
     useEffect(() => {
