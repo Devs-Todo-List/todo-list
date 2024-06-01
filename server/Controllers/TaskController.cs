@@ -29,7 +29,7 @@ namespace server.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<TaskResponseDto>> GetTask([FromHeader(Name = "Authorization")] string authToken, [FromRoute] int id)
         {
-            var username = JwtUtils.GetClaim(authToken, "username");
+            var email = JwtUtils.GetClaim(authToken, "username");
             var task = await taskRepository.GetById(id);
             
             if (task is null)
@@ -37,7 +37,7 @@ namespace server.Controllers
                 return NotFound("Task not found");
             }
 
-            if (task.User!.Username != username)
+            if (task.User!.Email != email)
             {
                 return Unauthorized();
             }
@@ -53,7 +53,7 @@ namespace server.Controllers
         public async Task<IActionResult> PutTask([FromHeader(Name = "Authorization")] string authToken,
             [FromRoute] int id, [FromBody] TaskUpdateDTO taskUpdateDto)
         {
-            var username = JwtUtils.GetClaim(authToken, "username");
+            var email = JwtUtils.GetClaim(authToken, "username");
 
             if (id != taskUpdateDto.TaskId)
             {
@@ -68,7 +68,7 @@ namespace server.Controllers
                 return NotFound("Task not found");
             }
 
-            if (task!.User!.Username != username)
+            if (task!.User!.Email != email)
             {
                 return Unauthorized();
             }
@@ -88,8 +88,8 @@ namespace server.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(TaskResponseDto))]
         public async Task<ActionResult<TaskResponseDto>> PostTask([FromHeader(Name = "Authorization")] string authToken, [FromBody] TaskCreateDto taskCreateDto)
         {
-            var username = JwtUtils.GetClaim(authToken, "username");
-            var user = await userRepository.FindByUsername(username);
+            var email = JwtUtils.GetClaim(authToken, "username");
+            var user = await userRepository.FindByEmail(email);
             taskCreateDto.UserId = user!.UserId;
             var createdTask = await taskRepository.Create(taskCreateDto.ToTask());
             var taskDto = new TaskResponseDto(createdTask);
@@ -102,7 +102,7 @@ namespace server.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteTask([FromHeader(Name = "Authorization")] string authToken, int id)
         {
-            var username = JwtUtils.GetClaim(authToken, "username");
+            var email = JwtUtils.GetClaim(authToken, "username");
 
             var task = await taskRepository.GetById(id);
 
@@ -111,7 +111,7 @@ namespace server.Controllers
                 return NotFound("Task not found");
             }
 
-            if (task!.User!.Username != username)
+            if (task!.User!.Email != email)
             {
                 return Unauthorized();
             }

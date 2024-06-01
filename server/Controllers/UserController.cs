@@ -41,7 +41,7 @@ namespace server.Controllers
         public async Task<ActionResult<UserDto>> GetUserByUsername([FromHeader(Name = "Authorization")] string authToken)
         {
             var username = JwtUtils.GetClaim(authToken, "username");
-            var user = await userRepository.FindByUsername(username);
+            var user = await userRepository.FindByEmail(username);
 
             if (user is null)
             {
