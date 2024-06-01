@@ -104,7 +104,7 @@ function App() {
                 user={user} 
             />
             <h1 style={{ marginBottom: '20px' }}>
-                Kanban UI
+                    TodoZen
             </h1>
             <button 
                 className="create-task-button" 

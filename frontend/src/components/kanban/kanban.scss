@@ -70,3 +70,44 @@
         }
     }
 }
+.app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px;
+}
+
+.content {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.kanban-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.create-task-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+
+    &:hover {
+        background-color: #45a049;
+    }
+}
+
+@media (max-width: 768px) {
+    .kanban-header {
+        justify-content: center;
+    }
+
+    .create-task-button {
+        width: 100%;
+    }
+}
