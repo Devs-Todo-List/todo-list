@@ -91,18 +91,28 @@ resource "aws_elastic_beanstalk_environment" "api_env" {
   }
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
-    name      = "DB_USERNAME"
-    value     = module.rds.db_instance_username
+    name      = "DB_CONNECTION_STRING"
+    value     = "Data Source=" + module.rds.db_instance_address + ";Initial Catalog=devtodolistdb;Encrypt=false;User Id=" + module.rds.db_instance_username + ";Password=" + jsondecode(data.aws_secretsmanager_secret_version.db-details.secret_string)["password"] + ";"
   }
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
-    name      = "DB_PASSWORD"
-    value     = jsondecode(data.aws_secretsmanager_secret_version.db-details.secret_string)["password"]
+    name      = "USERPOOL_ID"
+    value     = var.cognito_user_pool_id
   }
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
-    name      = "DB_URL"
-    value     = module.rds.db_instance_address
+    name      = "COGNITO_CLIENTID"
+    value     = var.cognito_user_pool_client_id
+  }
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "AWS_ACCESS_ID"
+    value     = var.cognito_access_token
+  }
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "AWS_ACCESS_SECRET"
+    value     = var.cognito_secret_access_key
   }
 }
 
