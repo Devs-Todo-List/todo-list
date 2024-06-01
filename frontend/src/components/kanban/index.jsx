@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { useSwipeable } from 'react-swipeable';
 import Card from '../card';
 import './kanban.scss';
@@ -41,11 +41,11 @@ const Kanban = ({ data, setData, onTaskClick }) => {
     };
 
     const handleMoveTask = (taskId, newState) => {
-        const sourceColIndex = data.findIndex(col => col.tasks.find(task => task.id === taskId));
+        const sourceColIndex = data.findIndex(col => col.tasks.find(task => task.taskId === taskId));
         if (sourceColIndex === -1) return;
 
         const sourceCol = data[sourceColIndex];
-        const taskIndex = sourceCol.tasks.findIndex(task => task.id === taskId);
+        const taskIndex = sourceCol.tasks.findIndex(task => task.taskId === taskId);
         if (taskIndex === -1) return;
 
         const [movedTask] = sourceCol.tasks.splice(taskIndex, 1);
@@ -87,7 +87,7 @@ const Kanban = ({ data, setData, onTaskClick }) => {
                                     </div>
                                     <div className="kanban__section__content">
                                         {section.tasks.map((task, taskIndex) => (
-                                            <Draggable key={task.id} draggableId={task.id} index={taskIndex}>
+                                            <Draggable key={task.taskId} draggableId={task.taskId.toString()} index={taskIndex}>
                                                 {(provided, snapshot) => (
                                                     <div
                                                         ref={provided.innerRef}
