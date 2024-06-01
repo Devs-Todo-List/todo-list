@@ -17,8 +17,8 @@ namespace server.Controllers
         [SwaggerResponse(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TaskResponseDto>> GetTasks([FromHeader(Name = "Authorization")] string authToken)
         {
-            var username = JwtUtils.GetClaim(authToken, "username");
-            var tasks = await taskRepository.FindAll(task => task.User!.Username == username);
+            var email = JwtUtils.GetClaim(authToken, "username");
+            var tasks = await taskRepository.FindAll(task => task.User!.Email == email);
             var dtos = tasks.Select(t => new TaskResponseDto(t));
             return Ok(dtos);
         }

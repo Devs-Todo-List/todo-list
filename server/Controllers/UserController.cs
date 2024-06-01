@@ -14,7 +14,7 @@ namespace server.Controllers
     public class UserController(UserRepository userRepository) : ControllerBase
     {
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize(Policy = RoleType.Admin)]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserDto>))]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {

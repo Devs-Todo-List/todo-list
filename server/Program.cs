@@ -2,20 +2,12 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using server;
 using server.Data;
-using server.Jwt;
 using server.Repositories;
-using server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var signingKey = Environment.GetEnvironmentVariable("JWT_SECRET");
-if (signingKey is null)
-{
-    throw new Exception("Signing Key does not exist");
-}
-
-var jwtOptions = new JwtOptions("https://localhost:7240", "https://localhost:7240", signingKey!, 3600);
 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 if (string.IsNullOrWhiteSpace(connectionString))
 {
@@ -31,36 +23,44 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton(dbConnectionDetails);
 builder.Services.AddDbContext<AppDbContext>();
-builder.Services.AddSingleton(jwtOptions);
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<StatusRepository>();
-builder.Services.AddScoped<RoleRepository>();
-builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TaskTypeRepository>();
 builder.Services.AddScoped<TaskRepository>();
 builder.Services.AddScoped<CommentRepository>();
 
-
+builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+{
+    builder.WithOrigins("*")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+}));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>
     {
-        //convert the string signing key to byte array
-        byte[] signingKeyBytes = Encoding.UTF8
-            .GetBytes(jwtOptions.SigningKey);
-
+        var userPoolId = Environment.GetEnvironmentVariable("USERPOOL_ID")!;
+        opts.Authority = $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}";
+        opts.MetadataAddress = $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
+        opts.IncludeErrorDetails = true;
+        opts.RequireHttpsMetadata = false;
         opts.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidateAudience = true,
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtOptions.Issuer,
-            ValidAudience = jwtOptions.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
+            RoleClaimType = "cognito:groups"
         };
     });
 
-builder.Services.AddAuthorization();
+// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//     .AddJwtBearer();
+
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy("admin", policy => policy.RequireClaim("cognito:groups", "admin"));
+    options.AddPolicy("user", policy => policy.RequireClaim("cognito:groups", "user"));
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -70,9 +70,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
+app.MapGet("/test", () => {
+    Console.WriteLine("Authentication working");
+});
+
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors("MyPolicy");
 
 app.UseExceptionHandler("/error");
 app.MapControllers().RequireAuthorization();
