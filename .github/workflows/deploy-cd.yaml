@@ -31,7 +31,7 @@ jobs:
 
     - name: Publish API
       working-directory: ./server
-      run: dotnet publish -c Release --output ../bundle/api/api
+      run: dotnet publish -c Release --output ../bundle/api
 
     - name: Create ZIP Package
       working-directory: ./bundle/api
