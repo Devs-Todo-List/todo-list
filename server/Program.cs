@@ -1,9 +1,12 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using server;
 using server.Data;
+using server.Models;
 using server.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +43,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         var userPoolId = Environment.GetEnvironmentVariable("USERPOOL_ID")!;
         opts.Authority = $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}";
-        opts.MetadataAddress = $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
+        opts.MetadataAddress =
+            $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
         opts.IncludeErrorDetails = true;
         opts.RequireHttpsMetadata = false;
         opts.TokenValidationParameters = new TokenValidationParameters
@@ -53,13 +57,28 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer();
-
-builder.Services.AddAuthorization(options => {
+builder.Services.AddAuthorization(options =>
+{
     options.AddPolicy("admin", policy => policy.RequireClaim("cognito:groups", "admin"));
     options.AddPolicy("user", policy => policy.RequireClaim("cognito:groups", "user"));
 });
+
+//Rate Limiting
+builder.Services.Configure<MyRateLimitOptions>(
+    builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit));
+
+var myOptions = new MyRateLimitOptions();
+builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit).Bind(myOptions);
+const string fixedPolicy = "fixed";
+
+builder.Services.AddRateLimiter(rlo => rlo
+    .AddFixedWindowLimiter(policyName: fixedPolicy, options =>
+    {
+        options.PermitLimit = myOptions.PermitLimit;
+        options.Window = TimeSpan.FromSeconds(myOptions.Window);
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = myOptions.QueueLimit;
+    }));
 
 var app = builder.Build();
 
@@ -71,16 +90,12 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
-
-app.MapGet("/test", () => {
-    Console.WriteLine("Authentication working");
-});
-
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("MyPolicy");
 
 app.UseExceptionHandler("/error");
-app.MapControllers().RequireAuthorization();
+app.MapControllers().RequireAuthorization().RequireRateLimiting(fixedPolicy);
 
 app.Run();
