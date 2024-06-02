@@ -10,3 +10,19 @@ services:
       dockerfile: server/Dockerfile
     ports:
       - 5215:5215
+  database:
+    image: devtodolistdb
+    build:
+      context: database
+      dockerfile: ./Dockerfile
+    ports:
+      - 1433:1433
+  frontend:
+    image: frontend
+    build:
+      context: frontend
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 5173:5173
