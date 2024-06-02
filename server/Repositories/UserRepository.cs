@@ -6,9 +6,9 @@ namespace server.Repositories
 {
     public class UserRepository(AppDbContext context) : GenericRepository<User>(context)
     {
-        public async Task<User?> FindByUsername(string username)
+        public async Task<User?> FindByEmail(string email)
         {
-            return await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            return await context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }

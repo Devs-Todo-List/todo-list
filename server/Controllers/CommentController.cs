@@ -17,11 +17,11 @@ namespace server.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<CommentDto>>> GetCommentsForTask([FromHeader(Name = "Authorization")] string authToken, [FromRoute] int taskId)
         { 
-            var username = JwtUtils.GetClaim(authToken, "username");
+            var email = JwtUtils.GetClaim(authToken, "username");
 
             var comments = await commentRepository.FindAll(c => c.TaskId == taskId);
             var firstComment = comments.FirstOrDefault();
-            if (firstComment is not null && firstComment.Task!.User!.Username != username)
+            if (firstComment is not null && firstComment.Task!.User!.Email != email)
             {
                 return Unauthorized();
             }
@@ -40,7 +40,7 @@ namespace server.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CommentDto>> GetComment([FromHeader(Name = "Authorization")] string authToken, [FromRoute] int id)
         {
-            var username = JwtUtils.GetClaim(authToken, "username");
+            var email = JwtUtils.GetClaim(authToken, "username");
             var comment = await commentRepository.GetById(id);
 
             if (comment is null)
@@ -48,7 +48,7 @@ namespace server.Controllers
                 return NotFound("Comment not found");
             }
 
-            if (comment.Task!.User!.Username != username)
+            if (comment.Task!.User!.Email != email)
             {
                 return Unauthorized();
             }
@@ -69,7 +69,7 @@ namespace server.Controllers
                 return BadRequest();
             }
             
-            var username = JwtUtils.GetClaim(authToken, "username");
+            var email = JwtUtils.GetClaim(authToken, "username");
             var originalComment = await commentRepository.GetById(id);
 
             if (originalComment is null)
@@ -77,7 +77,7 @@ namespace server.Controllers
                 return NotFound("Comment not found");
             }
             
-            if (originalComment.Task!.User!.Username != username)
+            if (originalComment.Task!.User!.Email != email)
             {
                 return Unauthorized();
             }

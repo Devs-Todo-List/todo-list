@@ -14,7 +14,7 @@ namespace server.Controllers
     public class UserController(UserRepository userRepository) : ControllerBase
     {
         [HttpGet]
-        [Authorize(Roles = RoleType.Admin)]
+        [Authorize(Policy = RoleType.Admin)]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserDto>))]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
@@ -41,7 +41,7 @@ namespace server.Controllers
         public async Task<ActionResult<UserDto>> GetUserByUsername([FromHeader(Name = "Authorization")] string authToken)
         {
             var username = JwtUtils.GetClaim(authToken, "username");
-            var user = await userRepository.FindByUsername(username);
+            var user = await userRepository.FindByEmail(username);
 
             if (user is null)
             {

@@ -1,0 +1,50 @@
+name: Release CD
+
+on:
+  workflow_call: 
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  security-events: write
+  id-token: write
+
+jobs:
+  api-deploy:
+    name: API Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{secrets.AWS_ASSUME_ROLE}}
+        aws-region: "eu-west-1"
+        role-session-name: GitHub_to_AWS_via_FederatedOIDC
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Dotnet publish
+      run: |
+        dotnet restore;
+        dotnet publish -r linux-x64 --configuration "Release" --self-contained "true";
+      working-directory: server
+
+    - name: Package artifact
+      run: zip -r ../site.zip *
+      working-directory: server/bin/Release/net8.0/linux-x64/publish
+
+    - name: Upload artifact to S3
+      run: aws s3 cp site.zip s3://958933916692-deploy-bucket
+      working-directory: server/bin/Release/net8.0/linux-x64
+
+    - name: Create New API Version
+      run: aws elasticbeanstalk create-application-version --application-name api-app --source-bundle S3Bucket="958933916692-deploy-bucket",S3Key="site.zip" --version-label "deploy-${{ github.sha }}" --description "commit-sha-${{ github.sha }}"
+
+    - name: Deploy API
+      run: aws elasticbeanstalk update-environment --environment-name api-env --version-label "deploy-${{ github.sha }}"
