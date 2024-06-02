@@ -10,7 +10,7 @@ namespace server.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class TaskController(TaskRepository taskRepository, UserRepository userRepository) : ControllerBase
+    public class TaskController(TaskRepository taskRepository, UserRepository userRepository, StatusRepository statusRepository) : ControllerBase
     {
         [HttpGet]
         [SwaggerResponse(StatusCodes.Status200OK, Type = typeof(IEnumerable<TaskResponseDto>))]
@@ -19,8 +19,15 @@ namespace server.Controllers
         {
             var email = JwtUtils.GetClaim(authToken, "username");
             var tasks = await taskRepository.FindAll(task => task.User!.Email == email);
-            var dtos = tasks.Select(t => new TaskResponseDto(t));
-            return Ok(dtos);
+            var userTasks = tasks.Select(t => new TaskResponseDto(t));
+            var statuses = await statusRepository.GetAll();
+            var ans = statuses.Select(s => new
+            {
+                id = s.StatusId.ToString() ,
+                title = s.StatusType,
+                tasks = userTasks.Where(ut => ut.StatusId == s.StatusId).ToList()
+            });
+            return Ok(ans);
         }
         
         [HttpGet("{id:int}")]

@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './loginPage';
 import HomePage from './homePage';
+import BoardPage from './boardPage';
 import ConfirmUserPage from './confirmUserPage';
-import './App.css'
+import './App.scss'
 
 const App = () => {
   const isAuthenticated = () => {
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/confirm" element={<ConfirmUserPage />} />
         <Route path="/home" element={isAuthenticated() ? <HomePage /> : <Navigate replace to="/login" />} />
+        <Route path="/board" element={isAuthenticated() ? <BoardPage /> : <Navigate replace to="/login" />} />
       </Routes>
     </BrowserRouter>
   );
