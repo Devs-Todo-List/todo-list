@@ -63,7 +63,7 @@ resource "aws_elastic_beanstalk_environment" "nodejs_env" {
   }
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
-    name      = "SERVER_PORT"
-    value     = "5000"
+    name      = "PORT"
+    value     = "5173"
   }
 }
