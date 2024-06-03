@@ -1,0 +1,2 @@
+NodeInstall: npm install
+ViteInstall: npm i -g vite
