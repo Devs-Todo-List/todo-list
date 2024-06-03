@@ -7,7 +7,7 @@ resource "aws_elastic_beanstalk_application" "nodejs_app" {
 resource "aws_elastic_beanstalk_environment" "nodejs_env" {
   name                = "nodejs-env"
   application         = aws_elastic_beanstalk_application.nodejs_app.name
-  solution_stack_name = "64bit Amazon Linux 2023 v6.1.4 running Node.js 20"
+  solution_stack_name = "64bit Amazon Linux 2023 v6.1.5 running Node.js 20"
   tier                = "WebServer"
 
 
