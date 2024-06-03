@@ -69,6 +69,6 @@ resource "aws_elastic_beanstalk_environment" "nodejs_env" {
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "VITE_API_URL"
-    value     = aws_elastic_beanstalk_environment.api_env.endpoint_url
+    value     = aws_elastic_beanstalk_environment.api_env.application
   }
 }
