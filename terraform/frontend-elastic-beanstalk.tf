@@ -118,6 +118,6 @@ resource "aws_elastic_beanstalk_environment" "nodejs_env" {
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "VITE_API_URL"
-    value     = "devtodo-api.projects.bbdgrad.com"
+    value     = "http://devtodo-api.projects.bbdgrad.com"
   }
 }
