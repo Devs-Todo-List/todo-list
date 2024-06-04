@@ -32,9 +32,9 @@ builder.Services.AddScoped<TaskTypeRepository>();
 builder.Services.AddScoped<TaskRepository>();
 builder.Services.AddScoped<CommentRepository>();
 
-builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+builder.Services.AddCors(o => o.AddPolicy("MyPolicy", corsPolicyBuilder =>
 {
-    builder.WithOrigins("*")
+    corsPolicyBuilder.WithOrigins("*")
         .AllowAnyMethod()
         .AllowAnyHeader();
 }));
@@ -57,11 +57,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("admin", policy => policy.RequireClaim("cognito:groups", "admin"));
-    options.AddPolicy("user", policy => policy.RequireClaim("cognito:groups", "user"));
-});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("admin", policy => policy.RequireClaim("cognito:groups", "admin"))
+    .AddPolicy("user", policy => policy.RequireClaim("cognito:groups", "user"));
 
 //Rate Limiting
 builder.Services.Configure<MyRateLimitOptions>(
@@ -89,7 +87,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
