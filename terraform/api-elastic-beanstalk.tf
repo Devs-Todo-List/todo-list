@@ -62,7 +62,7 @@ resource "aws_elastic_beanstalk_environment" "api_env" {
   setting {
     namespace = "aws:elasticbeanstalk:application"
     name      = "Application Healthcheck URL"
-    value     = "/"
+    value     = "/api/v1/AppStatus"
   }
   setting {
     namespace = "aws:elasticbeanstalk:command"
