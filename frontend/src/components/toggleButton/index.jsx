@@ -7,9 +7,9 @@ const ToggleButton = ({ toggleMode, isDarkMode }) => {
     return (
         <div className="toggle-button" onClick={toggleMode}>
             {isDarkMode ? (
-                <FontAwesomeIcon icon={faMoon} />
-            ) : (
                 <FontAwesomeIcon icon={faSun} />
+            ) : (
+                <FontAwesomeIcon icon={faMoon} />
             )}
         </div>
     );
