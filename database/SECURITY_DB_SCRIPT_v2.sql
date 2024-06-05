@@ -55,3 +55,10 @@ GO
 
 ALTER TABLE [Task] ADD FOREIGN KEY ([TaskTypeID]) REFERENCES [TaskType] ([TaskTypeID])
 GO
+
+INSERT INTO [Status] ([StatusType])
+VALUES ('To Do'), ('In Progress'), ('Done');
+
+INSERT INTO [TaskType] ([TaskTypeDescription])
+VALUES ('Feature');
+
