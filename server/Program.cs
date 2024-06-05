@@ -1,12 +1,7 @@
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
-using server;
 using server.Data;
-using server.Models;
 using server.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,7 +29,7 @@ builder.Services.AddScoped<CommentRepository>();
 
 builder.Services.AddCors(o => o.AddPolicy("MyPolicy", corsPolicyBuilder =>
 {
-    corsPolicyBuilder.WithOrigins("*")
+    corsPolicyBuilder.WithOrigins("http://localhost:5173", "https://devtodo.projects.bbdgrad.com")
         .AllowAnyMethod()
         .AllowAnyHeader();
 }));
@@ -62,21 +57,7 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("user", policy => policy.RequireClaim("cognito:groups", "user"));
 
 //Rate Limiting
-builder.Services.Configure<MyRateLimitOptions>(
-    builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit));
 
-var myOptions = new MyRateLimitOptions();
-builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit).Bind(myOptions);
-const string fixedPolicy = "fixed";
-
-builder.Services.AddRateLimiter(rlo => rlo
-    .AddFixedWindowLimiter(policyName: fixedPolicy, options =>
-    {
-        options.PermitLimit = myOptions.PermitLimit;
-        options.Window = TimeSpan.FromSeconds(myOptions.Window);
-        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        options.QueueLimit = myOptions.QueueLimit;
-    }));
 
 var app = builder.Build();
 
@@ -88,12 +69,11 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
-app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("MyPolicy");
 
 app.UseExceptionHandler("/error");
-app.MapControllers().RequireAuthorization().RequireRateLimiting(fixedPolicy);
+app.MapControllers().RequireAuthorization();
 
 app.Run();
