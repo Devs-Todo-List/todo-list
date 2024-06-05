@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
+import { confirmSignUp } from "aws-amplify/auth";
 
 const ConfirmUserPage = () => {
   const navigate = useNavigate();
@@ -10,25 +11,31 @@ const ConfirmUserPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/confirmSignup`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            "username": email,
-            "code": confirmationCode
-          })
-        });
+    const response = await confirmSignUp({
+      username: email,
+      confirmationCode: confirmationCode
+    });
 
-      alert("Account confirmed successfully!\nSign in on next page.");
-      navigate('/login');
-    } catch (error) {
-      alert(`Failed to confirm account: ${error}`);
-    }
+    console.log(response);
+    // try {
+    //   await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/confirmSignup`,
+    //     {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         Accept: 'application/json',
+    //       },
+    //       body: JSON.stringify({
+    //         "username": email,
+    //         "code": confirmationCode
+    //       })
+    //     });
+
+    //   alert("Account confirmed successfully!\nSign in on next page.");
+    //   navigate('/login');
+    // } catch (error) {
+    //   alert(`Failed to confirm account: ${error}`);
+    // }
   };
 
   return (

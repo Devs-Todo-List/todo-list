@@ -1,3 +1,4 @@
+import { getCurrentUser } from 'aws-amplify/auth';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,20 +36,17 @@ const HomePage = () => {
   }
 
   useEffect(() => {
-    const githubToken = getQueryParam('githubToken');
-    if(githubToken)
-    {
-      localStorage.setItem('githubToken', githubToken);
+    const isAuthenticated = async () => {
+      try {
+        await getCurrentUser();
+      }
+      catch(error) {
+        navigate("/login");
+      }
     }
 
-    const username = getQueryParam('username');
-    if(username)
-    {
-      localStorage.setItem('username', username);
-    }
-
-    window.history.replaceState({}, document.title, '/home');
-  }, []);
+    isAuthenticated();
+  }, [navigate]);
 
   useEffect(() => {
     console.log("Repos:", repos);
