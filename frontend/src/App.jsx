@@ -4,6 +4,8 @@ import HomePage from './homePage';
 import BoardPage from './boardPage';
 import ConfirmSignUpPage from './confirmSignUpPage';
 import SetupMFAPage from './setupMFAPage';
+import ForgotPasswordPage from './forgotPasswordPage';
+import ResetPasswordPage from './resetPasswordPage';
 import './App.scss'
 
 const App = () => {
@@ -14,6 +16,8 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/setupMFA" element={<SetupMFAPage />} />
         <Route path="/confirm" element={<ConfirmSignUpPage />} />
+        <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
+        <Route path="/resetPassword" element={<ResetPasswordPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/board" element={<BoardPage /> }/>
       </Routes>

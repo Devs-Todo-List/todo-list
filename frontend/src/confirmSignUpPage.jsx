@@ -19,9 +19,9 @@ const ConfirmSignUpPage = () => {
       });
 
       if(response.isSignUpComplete === true)
-        {
-          navigate('/login');
-        }
+      {
+        navigate('/login');
+      }
     }
     catch(error) {
       alert(`Error occured: ${error.message}`);

@@ -105,6 +105,11 @@ const LoginPage = () => {
     // }
   };
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    navigate('/forgotPassword');
+  }
+
   useEffect(() => {
     const isAuthenticated = async () => {
       try {
@@ -164,6 +169,9 @@ const LoginPage = () => {
       <button onClick={() => setIsSignUp(!isSignUp)}>
         {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
       </button>
+      <div>
+        <button onClick={(e) => handleForgotPassword(e)}>Forgot password?</button>
+      </div>
     </div>    
   );
 };
