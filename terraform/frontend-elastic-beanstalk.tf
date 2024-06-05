@@ -121,3 +121,8 @@ resource "aws_elastic_beanstalk_environment" "nodejs_env" {
     value     = "http://devtodo-api.projects.bbdgrad.com"
   }
 }
+
+resource "aws_wafv2_web_acl_association" "fe-waf-association" {
+  resource_arn = aws_elastic_beanstalk_environment.nodejs_env.load_balancers[0].arn
+  web_acl_arn  = aws_wafv2_web_acl.ip-rate-limiter.arn
+}
