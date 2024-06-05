@@ -52,9 +52,58 @@ resource "aws_elastic_beanstalk_environment" "nodejs_env" {
     value     = "true"
   }
   setting {
+    namespace = "aws:ec2:vpc"
+    name      = "AssociatePublicIpAddress"
+    value     = "true"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elb:healthcheck"
+    name      = "Interval"
+    value     = 60
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elb:healthcheck"
+    name      = "Timeout"
+    value     = 20
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:autoscaling:asg"
+    name      = "MinSize"
+    value     = 1
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:autoscaling:asg"
+    name      = "MaxSize"
+    value     = 1
+    resource  = ""
+  }
+  setting {
     namespace = "aws:elasticbeanstalk:environment"
     name      = "EnvironmentType"
-    value     = "SingleInstance"
+    value     = "LoadBalanced"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elasticbeanstalk:environment"
+    name      = "LoadBalancerType"
+    value     = "application"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elbv2:listener:80"
+    name      = "ListenerEnabled"
+    value     = "true"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elbv2:listener:80"
+    name      = "Protocol"
+    value     = "HTTP"
+    resource  = ""
   }
   setting {
     namespace = "aws:elasticbeanstalk:managedactions"
@@ -69,6 +118,6 @@ resource "aws_elastic_beanstalk_environment" "nodejs_env" {
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "VITE_API_URL"
-    value     = aws_elastic_beanstalk_environment.api_env.application
+    value     = "http://devtodo-api.projects.bbdgrad.com"
   }
 }

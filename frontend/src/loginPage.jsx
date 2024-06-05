@@ -1,6 +1,7 @@
 /* eslint-disable no-case-declarations */
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import './loginPage.scss'
 import { signIn, confirmSignIn, signUp } from "aws-amplify/auth";
 import QRCode from 'qrcode.react'
 
@@ -144,7 +145,7 @@ const LoginPage = () => {
   return (
     <>
     <div className="loginForm">
-      <h1>Welcome</h1>
+      <h1>Welcome to TodoZen</h1>
       <h4>{isSignUp ? 'Sign up to create an account' : 'Sign in to your account'}</h4>
       <form onSubmit={isSignUp ? handleSignUp : handleSignIn}>
         <div>

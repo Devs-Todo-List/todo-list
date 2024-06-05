@@ -75,14 +75,63 @@ resource "aws_elastic_beanstalk_environment" "api_env" {
     value     = "true"
   }
   setting {
-    namespace = "aws:elasticbeanstalk:environment"
-    name      = "EnvironmentType"
-    value     = "SingleInstance"
-  }
-  setting {
     namespace = "aws:elasticbeanstalk:managedactions"
     name      = "ManagedActionsEnabled"
     value     = "false"
+  }
+  setting {
+    namespace = "aws:elasticbeanstalk:environment"
+    name      = "EnvironmentType"
+    value     = "LoadBalanced"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elasticbeanstalk:environment"
+    name      = "LoadBalancerType"
+    value     = "application"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elbv2:listener:80"
+    name      = "ListenerEnabled"
+    value     = "true"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elbv2:listener:80"
+    name      = "Protocol"
+    value     = "HTTP"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:ec2:vpc"
+    name      = "AssociatePublicIpAddress"
+    value     = "true"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elb:healthcheck"
+    name      = "Interval"
+    value     = 30
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elb:healthcheck"
+    name      = "Timeout"
+    value     = 15
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:autoscaling:asg"
+    name      = "MinSize"
+    value     = 1
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:autoscaling:asg"
+    name      = "MaxSize"
+    value     = 1
+    resource  = ""
   }
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
@@ -115,4 +164,7 @@ resource "aws_elastic_beanstalk_environment" "api_env" {
     value     = var.cognito_secret_access_key
   }
 }
+
+
+
 
