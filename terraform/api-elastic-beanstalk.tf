@@ -2,6 +2,11 @@ data "aws_secretsmanager_secret_version" "db-details" {
   secret_id = module.rds.db_instance_master_user_secret_arn
 }
 
+data "aws_acm_certificate" "api-issued" {
+  domain   = "devtodo-api.projects.bbdgrad.com"
+  statuses = ["ISSUED"]
+}
+
 
 resource "aws_iam_role" "beanstalk_ec2" {
   assume_role_policy    = "{\"Statement\":[{\"Action\":\"sts:AssumeRole\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"ec2.amazonaws.com\"}}],\"Version\":\"2012-10-17\"}"
@@ -92,15 +97,21 @@ resource "aws_elastic_beanstalk_environment" "api_env" {
     resource  = ""
   }
   setting {
-    namespace = "aws:elbv2:listener:80"
+    namespace = "aws:elbv2:listener:443"
     name      = "ListenerEnabled"
     value     = "true"
     resource  = ""
   }
   setting {
-    namespace = "aws:elbv2:listener:80"
+    namespace = "aws:elbv2:listener:443"
     name      = "Protocol"
-    value     = "HTTP"
+    value     = "HTTPS"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elbv2:listener:443"
+    name      = "SSLCertificateArns"
+    value     = data.aws_acm_certificate.api-issued.arn
     resource  = ""
   }
   setting {

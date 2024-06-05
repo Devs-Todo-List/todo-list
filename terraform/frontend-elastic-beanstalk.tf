@@ -4,6 +4,11 @@ resource "aws_elastic_beanstalk_application" "nodejs_app" {
   description = "App for NodeJS API"
 }
 
+data "aws_acm_certificate" "issued" {
+  domain   = "devtodo.projects.bbdgrad.com"
+  statuses = ["ISSUED"]
+}
+
 resource "aws_elastic_beanstalk_environment" "nodejs_env" {
   name                = "nodejs-env"
   application         = aws_elastic_beanstalk_application.nodejs_app.name
@@ -94,15 +99,21 @@ resource "aws_elastic_beanstalk_environment" "nodejs_env" {
     resource  = ""
   }
   setting {
-    namespace = "aws:elbv2:listener:80"
+    namespace = "aws:elbv2:listener:443"
     name      = "ListenerEnabled"
     value     = "true"
     resource  = ""
   }
   setting {
-    namespace = "aws:elbv2:listener:80"
+    namespace = "aws:elbv2:listener:443"
     name      = "Protocol"
-    value     = "HTTP"
+    value     = "HTTPS"
+    resource  = ""
+  }
+  setting {
+    namespace = "aws:elbv2:listener:443"
+    name      = "SSLCertificateArns"
+    value     = data.aws_acm_certificate.issued.arn
     resource  = ""
   }
   setting {
