@@ -1,21 +1,20 @@
 /* eslint-disable no-case-declarations */
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import './loginPage.scss'
-import { signIn, confirmSignIn, signUp } from "aws-amplify/auth";
-import QRCode from 'qrcode.react'
+import { signIn, confirmSignIn, signUp, getCurrentUser } from "aws-amplify/auth";
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const [qrCode, setQRCode] = useState('');
-  const [code, setCode] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       const output = await signIn({
@@ -28,9 +27,9 @@ const LoginPage = () => {
         case "CONTINUE_SIGN_IN_WITH_TOTP_SETUP":
           const totpSetupDetails = nextStep.totpSetupDetails;
           const appName = 'ToDoList';
-          const setupUri = totpSetupDetails.getSetupUri(appName);
-          console.log(setupUri);
-          setQRCode(setupUri.href);  
+          const setupUri = totpSetupDetails.getSetupUri(appName).href;
+          //console.log(setupUri);
+          navigate('/setupMFA', {state: {setupUri}}); 
           break;
         case "CONFIRM_SIGN_IN_WITH_TOTP_CODE":
           const code = prompt('Enter OTP');
@@ -40,87 +39,51 @@ const LoginPage = () => {
 
           if(response.isSignedIn === true)
           {
-            //const session = await fetchAuthSession();
-            //console.log(session.tokens.accessToken.toString());
-            //sessionStorage.setItem('accessToken', session.tokens.accessToken.authenticationResult.accessToken);
-            window.location.href = '/home';
+            navigate('/home');
           }
 
-          console.log(response.isSignedIn);
+          break;
+        case "CONFIRM_SIGN_UP":
+          alert("User is not confirmed");
+          navigate('/confirm', {state: {email, password}});
+          break;
       }
     }
     catch(error) {
-      alert("Error occured:", error);
+      alert(`Error occured: ${error.message}`);
+      setIsSubmitting(false);
     }
-
-    // try {
-    //   const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/signIn`,
-    //     {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         Accept: 'application/json',
-    //       },
-    //       body: JSON.stringify({
-    //         "username": email,
-    //         "password": password
-    //       })
-    //     });
-
-    //   const session = await response.json();
-    //   if (session && typeof session !== 'undefined') {
-    //     console.log(session);
-    //     const mfaCode = prompt("Enter MFA code");
-    //     // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/mfa`,
-    //     //   {
-    //     //     method: 'POST',
-    //     //     headers: {
-    //     //       'Content-Type': 'application/json',
-    //     //       Accept: 'application/json',
-    //     //     },
-    //     //     body: JSON.stringify({
-    //     //       "code": mfaCode,
-    //     //       "session": session
-    //     //     })
-    //     //   });
-    //     //sessionStorage.setItem('accessToken', session.authenticationResult.accessToken);
-    //     if (sessionStorage.getItem('accessToken')) {
-    //       window.location.href = '/home';
-    //     } else {
-    //       console.error('Session token was not set properly.');
-    //     }
-    //   } else {
-    //     console.error('SignIn session or AccessToken is undefined.');
-    //   }
-    // } catch (error) {
-    //   alert(`Sign in failed: ${error}`);
-    // }
   };
-
-  const confirmLogin = async () => {
-    await confirmSignIn({
-      challengeResponse: code
-    });
-  }
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     if (password !== confirmPassword) {
       alert('Passwords do not match');
+      setIsSubmitting(false);
       return;
     }
 
-    const response = await signUp({
-      username: email,
-      password: password,
-      options: {
-        userAttributes: {
-          email: email,
-        },
-      }
-    });
-
-    console.log(response);
+    try {
+      const response = await signUp({
+        username: email,
+        password: password,
+        options: {
+          userAttributes: {
+            email: email,
+          },
+        }
+      });
+  
+      console.log(response);
+      navigate('/confirm', {state: {email, password}});
+    }
+    catch (error) {
+      alert(`Error occured: ${error.message}`);
+      setIsSubmitting(false);
+    }
+    
 
     // try {
     //   await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/signUp`,
@@ -142,8 +105,21 @@ const LoginPage = () => {
     // }
   };
 
+  useEffect(() => {
+    const isAuthenticated = async () => {
+      try {
+        await getCurrentUser();
+        navigate('/home');
+      }
+      catch(error) {
+        navigate("/login");
+      }
+    }
+
+    isAuthenticated();
+  }, [navigate]);
+
   return (
-    <>
     <div className="loginForm">
       <h1>Welcome to TodoZen</h1>
       <h4>{isSignUp ? 'Sign up to create an account' : 'Sign in to your account'}</h4>
@@ -183,16 +159,12 @@ const LoginPage = () => {
             />
           </div>
         )}
-        <button type="submit">{isSignUp ? 'Sign Up' : 'Sign In'}</button>
+        <button type="submit" disabled={isSubmitting}>{isSignUp ? 'Sign Up' : 'Sign In'}</button>
       </form>
       <button onClick={() => setIsSignUp(!isSignUp)}>
         {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
       </button>
-    </div>
-    <QRCode value={qrCode}/>
-    <input onChange={(e) => setCode(e.target.value)}></input>
-    <button onClick={() => confirmLogin()}>Check OTP</button>
-    </>
+    </div>    
   );
 };
 

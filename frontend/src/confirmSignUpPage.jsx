@@ -1,22 +1,31 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import { confirmSignUp } from "aws-amplify/auth";
+import { confirmSignUp, getCurrentUser, resendSignUpCode } from "aws-amplify/auth";
 
-const ConfirmUserPage = () => {
+const ConfirmSignUpPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const [email, setEmail] = useState(location.state?.email || '');
+  const [password] = useState(location.state?.password || '');
   const [confirmationCode, setConfirmationCode] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await confirmSignUp({
-      username: email,
-      confirmationCode: confirmationCode
-    });
+    try {
+      const response = await confirmSignUp({
+        username: email,
+        confirmationCode: confirmationCode
+      });
 
-    console.log(response);
+      if(response.isSignUpComplete === true)
+        {
+          navigate('/login');
+        }
+    }
+    catch(error) {
+      alert(`Error occured: ${error.message}`);
+    }
     // try {
     //   await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/confirmSignup`,
     //     {
@@ -37,6 +46,31 @@ const ConfirmUserPage = () => {
     //   alert(`Failed to confirm account: ${error}`);
     // }
   };
+
+  const handleResendCode = async (e) => {
+    e.target.disabled = true;
+    await resendSignUpCode({
+      username: email,
+      password: password,
+      options: {
+        userAttributes: {
+          email: email,
+        },
+      }
+    });
+  }
+
+  useEffect(() => {
+    const isAuthenticated = async () => {
+      try {
+        await getCurrentUser();
+        navigate('/home');
+      }
+      catch(error) { /* empty */ }
+    }
+
+    isAuthenticated();
+  }, [navigate]);
 
   return (
     <div className="loginForm">
@@ -63,9 +97,10 @@ const ConfirmUserPage = () => {
         </div>
         <button type="submit">Confirm Account</button>
       </form>
+      <button type="button" onClick={(e) => handleResendCode(e)}>Resend code</button>
     </div>
   );
 
 };
 
-export default ConfirmUserPage;
+export default ConfirmSignUpPage;
