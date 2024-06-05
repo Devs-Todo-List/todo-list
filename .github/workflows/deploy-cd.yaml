@@ -48,3 +48,35 @@ jobs:
 
     - name: Deploy API
       run: aws elasticbeanstalk update-environment --environment-name api-env --version-label "deploy-${{ github.sha }}"
+  frontend-deploy:
+    name: Frontend Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{secrets.AWS_ASSUME_ROLE}}
+        aws-region: "eu-west-1"
+        role-session-name: GitHub_to_AWS_via_FederatedOIDC
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Package artifact
+      run: zip -r fe-site.zip *
+      working-directory: frontend
+
+    - name: Upload artifact to S3
+      run: aws s3 cp fe-site.zip s3://958933916692-deploy-bucket
+      working-directory: frontend
+
+    - name: Create New Frontend Version
+      run: aws elasticbeanstalk create-application-version --application-name nodejs-app --source-bundle S3Bucket="958933916692-deploy-bucket",S3Key="fe-site.zip" --version-label "deploy-${{ github.sha }}" --description "commit-sha-${{ github.sha }}"
+
+    - name: Deploy Frontend
+      run: aws elasticbeanstalk update-environment --environment-name nodejs-env --version-label "deploy-${{ github.sha }}"

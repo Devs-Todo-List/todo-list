@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle, faSignOutAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import ToggleButton from '../toggleButton';
+import { useNavigate } from 'react-router-dom';
 import './sidebar.scss';
 
 const Sidebar = ({ isOpen, toggleDrawer, toggleMode, isDarkMode, user }) => {
@@ -11,6 +12,12 @@ const Sidebar = ({ isOpen, toggleDrawer, toggleMode, isDarkMode, user }) => {
         if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
             toggleDrawer();
         }
+    };
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+      sessionStorage.clear();
+      navigate('/login');
     };
 
     useEffect(() => {
@@ -39,7 +46,7 @@ const Sidebar = ({ isOpen, toggleDrawer, toggleMode, isDarkMode, user }) => {
                             {user ? `${user.firstName} ${user.lastName}` : 'Guest'}
                         </div>
                     </div>
-                    <button className="logout-btn" aria-label="Logout">
+                    <button className="logout-btn" aria-label="Logout" onClick={handleLogout}>
                         <FontAwesomeIcon icon={faSignOutAlt} /> Logout
                     </button>
                 </>
