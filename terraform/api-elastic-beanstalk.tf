@@ -157,12 +157,12 @@ resource "aws_elastic_beanstalk_environment" "api_env" {
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "USERPOOL_ID"
-    value     = var.cognito_user_pool_id
+    value     = aws_cognito_user_pool.TodoUserPool.id
   }
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "COGNITO_CLIENTID"
-    value     = var.cognito_user_pool_client_id
+    value     = aws_cognito_user_pool_client.TodoList.id
   }
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
