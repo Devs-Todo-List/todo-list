@@ -133,11 +133,7 @@ resource "aws_elastic_beanstalk_environment" "nodejs_env" {
   }
 }
 
-data "aws_lb" "fe_env_lb" {
-  arn = aws_elastic_beanstalk_environment.nodejs_env.load_balancers[0]
-}
-
 resource "aws_wafv2_web_acl_association" "fe-waf-association" {
-  resource_arn = data.aws_lb.fe_env_lb.arn
+  resource_arn = aws_elastic_beanstalk_environment.nodejs_env.load_balancers[0]
   web_acl_arn  = aws_wafv2_web_acl.ip-rate-limiter.arn
 }

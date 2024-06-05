@@ -175,12 +175,7 @@ resource "aws_elastic_beanstalk_environment" "api_env" {
     value     = var.cognito_secret_access_key
   }
 }
-
-data "aws_lb" "api_env_lb" {
-  arn = aws_elastic_beanstalk_environment.api_env.load_balancers[0]
-}
-
 resource "aws_wafv2_web_acl_association" "api-waf-association" {
-  resource_arn = data.aws_lb.api_env_lb.arn
+  resource_arn = aws_elastic_beanstalk_environment.api_env.load_balancers[0]
   web_acl_arn  = aws_wafv2_web_acl.ip-rate-limiter.arn
 }
