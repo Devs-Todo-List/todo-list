@@ -3,8 +3,11 @@ WORKDIR /app
 EXPOSE 5215
 
 ENV ASPNETCORE_URLS=http://+:5215
-ENV JWT_SECRET="<your own secret string>"
-ENV DB_CONNECTION_STRING="Data Source=<YOUR SERVER NAME>;Initial Catalog=devtodolistdb;Encrypt=false;Integrated Security=True;"
+ENV DB_CONNECTION_STRING=""
+ENV USERPOOL_ID=""
+ENV COGNITO_CLIENTID=""
+ENV AWS_ACCESS_ID=""
+ENV AWS_ACCESS_SECRET=""
 
 USER app
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
