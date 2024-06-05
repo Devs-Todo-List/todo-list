@@ -37,7 +37,5 @@ jobs:
         working-directory: ${{ env.terraform_directory }}
         run: |
           terraform apply -input=false -auto-approve=true -lock=true -lock-timeout=30m -refresh=true  \
-          -var="cognito_user_pool_id=${{ secrets.USERPOOL_ID }}" \
-          -var="cognito_user_pool_client_id=${{ secrets.COGNITO_CLIENTID }}" \
           -var="cognito_access_token=${{ secrets.AWS_ACCESS_ID }}" \
           -var="cognito_secret_access_key=${{ secrets.AWS_ACCESS_SECRET }}" \
