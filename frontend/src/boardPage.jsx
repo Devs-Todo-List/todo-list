@@ -7,6 +7,7 @@ import { faPlus, faBars } from '@fortawesome/free-solid-svg-icons';
 import CreateTaskModal from './components/CreateTaskModal';
 import ViewEditTaskModal from './components/ViewEditTaskModal';
 import tasksData from './tasks.json';
+import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 
 const user = {
     firstName: 'John',
@@ -26,23 +27,27 @@ function App() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     useEffect(() => {
-        fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
-        {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-        }
-        })
-        .then(response => {
-            if(!response.ok)
-                throw new Error("Error");
+        fetchAuthSession().then(response => {
+            const accessToken = response.tokens.accessToken;
+            
+            fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
+            {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            }
+            })
+            .then(response => {
+                if(!response.ok)
+                    throw new Error("Error");
 
-            return response.json();
-        })
-        .then(data => setData(data))
-        .catch(error => console.log(error));        
+                return response.json();
+            })
+            .then(data => setData(data))
+            .catch(error => console.log(error));
+            });  
     }, []);
 
     useEffect(() => {
@@ -79,24 +84,30 @@ function App() {
         // console.log(des);
         console.log(newDueDate);
         console.log(selectedSection);
-        fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-            },
-            body: JSON.stringify({
-                title: newTaskTitle,
-                description: newTaskDescription,
-                dateCreated: new Date().toISOString,
-                dueDate: newDueDate,
-                userId: 1,
-                statusId: selectedSection,
-                taskTypeId: 1
-            })
+
+        fetchAuthSession().then(response => {
+            const accessToken = response.tokens.accessToken;
+
+            fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
+                    title: newTaskTitle,
+                    description: newTaskDescription,
+                    dateCreated: new Date().toISOString,
+                    dueDate: newDueDate,
+                    userId: 1,
+                    statusId: selectedSection,
+                    taskTypeId: 1
+                })
+            });
         });
+        
         //setData(updatedData);
         setNewTaskTitle('');
         setNewTaskDescription('');
@@ -122,25 +133,30 @@ function App() {
             };
         });
         
-        fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${selectedTask.taskId}`,
-        {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-            },
-            body: JSON.stringify({
-                taskId: selectedTask.taskId,
-                title: selectedTask.title,
-                description: selectedTask.description,
-                dateCreated: selectedTask.dateCreated,
-                dueDate: selectedTask.dueDate,
-                userId: selectedTask.userId,
-                statusId: selectedTask.statusId,
-                taskTypeId: selectedTask.taskTypeId
-            })
+        fetchAuthSession().then(response => {
+            const accessToken = response.tokens.accessToken;
+
+            fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${selectedTask.taskId}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({
+                    taskId: selectedTask.taskId,
+                    title: selectedTask.title,
+                    description: selectedTask.description,
+                    dateCreated: selectedTask.dateCreated,
+                    dueDate: selectedTask.dueDate,
+                    userId: selectedTask.userId,
+                    statusId: selectedTask.statusId,
+                    taskTypeId: selectedTask.taskTypeId
+                })
+            });
         });
+        
 
         setData(updatedData);
         setIsViewEditModalOpen(false);

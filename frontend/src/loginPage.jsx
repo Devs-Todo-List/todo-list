@@ -66,7 +66,7 @@ const LoginPage = () => {
     }
 
     try {
-      const response = await signUp({
+      await signUp({
         username: email,
         password: password,
         options: {
@@ -76,7 +76,19 @@ const LoginPage = () => {
         }
       });
   
-      console.log(response);
+      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/signUp`,
+      {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+        },
+        body: JSON.stringify({
+          username: email,
+          password: password
+        })
+      });
+
       navigate('/confirm', {state: {email, password}});
     }
     catch (error) {

@@ -53,25 +53,10 @@ namespace server.Controllers
         [HttpPost("signUp")]
         public async Task<IActionResult> SignUp([FromBody] AuthSignUpDto authSignUpDto)
         {
-            var signUpRequest = new SignUpRequest
-            {
-                ClientId = ClientId,
-                Username = authSignUpDto.username,
-                Password = authSignUpDto.password,
-                UserAttributes =
-                [
-                    new AttributeType
-                    {
-                        Name = "email",
-                        Value = authSignUpDto.username
-                    }
-                ]
-            };
- 
             try
             {
-                var signUpResponse = await _provider.SignUpAsync(signUpRequest);
                 await AddUserToGroup(authSignUpDto.username, "user");
+                await AddUser(authSignUpDto.username);
                 Console.WriteLine("Sign up successful");
                 return Ok("User signed up successfully");
             }
