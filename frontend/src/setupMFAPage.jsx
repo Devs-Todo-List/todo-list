@@ -45,7 +45,7 @@ const SetupMFAPage = () => {
       <h3>Multifactor Authentication is enabled.</h3>
       <h4>Add the app to your authenticator by scanning the QR code.</h4>
       <QRCode className="qrCode" value={qrCode} size={200}/>
-      <input className="inputText" onChange={(e) => setCode(e.target.value)}></input>
+      <input className="inputText" placeholder="Enter OTP" onChange={(e) => setCode(e.target.value)}></input>
       <button onClick={() => confirmLogin()}>Check OTP</button>
     </div>
   );

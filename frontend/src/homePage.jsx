@@ -29,23 +29,23 @@ function App() {
           const accessToken = response.tokens.accessToken;
           
           fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
-          {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
-              Authorization: `Bearer ${accessToken}`
-          }
-          })
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${accessToken}`
+            }
+            })
           .then(response => {
               if(!response.ok)
                   throw new Error("Error");
 
               return response.json();
-          })
+            })
           .then(data => setData(data))
           .catch(error => console.log(error));
-          });  
+        });  
   }, []);
 
   useEffect(() => {
@@ -81,6 +81,24 @@ function App() {
                   statusId: selectedSection,
                   taskTypeId: 1
               })
+          }).then(() => {
+            fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        Authorization: `Bearer ${accessToken}`
+                }
+                })
+              .then(response => {
+                  if(!response.ok)
+                      throw new Error("Error");
+    
+                  return response.json();
+                })
+              .then(data => setData(data))
+              .catch(error => console.log(error));
           });
       });
       

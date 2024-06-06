@@ -21,6 +21,19 @@ const LoginPage = () => {
         username: email,
         password: password
       });
+
+      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/signUp`,
+        {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+          },
+          body: JSON.stringify({
+            username: email,
+            password: password
+          })
+        });
   
       const { nextStep } = output;
       switch(nextStep.signInStep) {
@@ -94,26 +107,6 @@ const LoginPage = () => {
       alert(`Error occurred: ${error.message}`);
       setIsSubmitting(false);
     }
-    
-
-    // try {
-    //   await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/signUp`,
-    //     {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         Accept: 'application/json',
-    //       },
-    //       body: JSON.stringify({
-    //         "username": email,
-    //         "password": password
-    //       })
-    //     });
-
-    //   navigate('/confirm', {state: {email}});
-    // } catch (error) {
-    //   alert(`Sign up failed: ${error}`);
-    // }
   };
 
   const handleForgotPassword = async (e) => {

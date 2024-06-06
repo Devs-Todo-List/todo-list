@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS devtodolistdb;
+
 CREATE DATABASE devtodolistdb;
 GO
 
