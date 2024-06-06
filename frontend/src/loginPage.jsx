@@ -31,7 +31,7 @@ const LoginPage = () => {
           navigate('/setupMFA', {state: {setupUri}}); 
           break;
         case "CONFIRM_SIGN_IN_WITH_TOTP_CODE":
-          const code = prompt('Enter OTP');
+          const code = prompt('Enter MFA OTP');
           const response = await confirmSignIn({
             challengeResponse: code
           });

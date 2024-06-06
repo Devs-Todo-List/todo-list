@@ -75,6 +75,7 @@ const ConfirmSignUpPage = () => {
   return (
     <div className="loginForm">
       <h2>Confirm Account</h2>
+      <h3>Confirmation code sent to email</h3>
       <form onSubmit={handleSubmit}>
         <div>
           <input
