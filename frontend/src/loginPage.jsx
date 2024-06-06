@@ -28,7 +28,6 @@ const LoginPage = () => {
           const totpSetupDetails = nextStep.totpSetupDetails;
           const appName = 'ToDoList';
           const setupUri = totpSetupDetails.getSetupUri(appName).href;
-          //console.log(setupUri);
           navigate('/setupMFA', {state: {setupUri}}); 
           break;
         case "CONFIRM_SIGN_IN_WITH_TOTP_CODE":

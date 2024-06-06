@@ -8,8 +8,6 @@ import { fetchAuthSession } from 'aws-amplify/auth';
 const Kanban = ({ data, setData, onTaskClick }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    console.log("Kanban", data);
-
     const onDragEnd = result => {
         if (!result.destination) return;
         const { source, destination } = result;
@@ -36,8 +34,6 @@ const Kanban = ({ data, setData, onTaskClick }) => {
                 ...destinationCol,
                 tasks: destinationTask
             };
-
-            console.log(result);
 
             fetchAuthSession().then(response => {
                 const accessToken = response.tokens.accessToken;

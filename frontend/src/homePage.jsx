@@ -9,11 +9,6 @@ import ViewEditTaskModal from './components/ViewEditTaskModal';
 import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
 import {useNavigate} from 'react-router-dom';
 
-const user = {
-    firstName: 'John',
-    lastName: 'Doe'
-};
-
 function App() {
   const navigate = useNavigate();
 
@@ -27,6 +22,7 @@ function App() {
   const [newDueDate, setNewDueDate] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [user, setUser] = useState("Guest");
 
   useEffect(() => {
       fetchAuthSession().then(response => {
@@ -65,28 +61,6 @@ function App() {
   };
 
   const handleCreateTask = () => {
-      // const newTask = {
-      //     id: `task-${Date.now()}`,
-      //     title: newTaskTitle,
-      //     description: newTaskDescription
-      // };
-
-      // const updatedData = data.map(section => {
-      //     if (section.id === selectedSection) {
-      //         return {
-      //             ...section,
-      //             tasks: [...section.tasks, newTask]
-      //         };
-      //     }
-      //     return section;
-      // });
-
-      console.log(newTaskTitle);
-      // const des = newTaskDescription.slice(3,-4);
-      // console.log(des);
-      console.log(newDueDate);
-      console.log(selectedSection);
-
       fetchAuthSession().then(response => {
           const accessToken = response.tokens.accessToken;
 
@@ -171,7 +145,8 @@ function App() {
   useEffect(() => {
     const isAuthenticated = async () => {
       try {
-        await getCurrentUser();
+        const response = await getCurrentUser();
+        setUser(response.username);
       }
       catch(error) {
         navigate("/login");
@@ -195,7 +170,7 @@ function App() {
               isDarkMode={isDarkMode} 
               user={user} 
           />
-          <h1 style={{ marginBottom: '20px' }}>
+          <h1 style={{ marginBottom: '20px', color:"#E4E4E4" }}>
                   TodoZen
           </h1>
           <button 

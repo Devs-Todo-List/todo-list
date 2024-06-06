@@ -29,10 +29,6 @@ const SetupMFAPage = () => {
   }
 
   useEffect(() => {
-    console.log(qrCode);
-  }, [qrCode]);
-
-  useEffect(() => {
     const isAuthenticated = async () => {
       try {
         await getCurrentUser();
