@@ -76,7 +76,7 @@ function App() {
                   title: newTaskTitle,
                   description: newTaskDescription,
                   dateCreated: new Date().toISOString,
-                  dueDate: newDueDate,
+                  dueDate: new Date().toISOString,
                   userId: 1,
                   statusId: selectedSection,
                   taskTypeId: 1
