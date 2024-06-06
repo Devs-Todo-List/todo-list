@@ -4,6 +4,7 @@ import { faUserCircle, faSignOutAlt, faTimes } from '@fortawesome/free-solid-svg
 import ToggleButton from '../toggleButton';
 import { useNavigate } from 'react-router-dom';
 import './sidebar.scss';
+import { signOut } from 'aws-amplify/auth';
 
 const Sidebar = ({ isOpen, toggleDrawer, toggleMode, isDarkMode, user }) => {
     const sidebarRef = useRef(null);
@@ -15,9 +16,14 @@ const Sidebar = ({ isOpen, toggleDrawer, toggleMode, isDarkMode, user }) => {
     };
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-      sessionStorage.clear();
-      navigate('/login');
+    const handleLogout = async () => {
+      try {
+        await signOut();
+        navigate('/login');
+      }
+      catch(error) {
+        alert(`Error occurred: ${error.message}`);
+      }
     };
 
     useEffect(() => {

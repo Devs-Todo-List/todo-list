@@ -50,7 +50,7 @@ const LoginPage = () => {
       }
     }
     catch(error) {
-      alert(`Error occured: ${error.message}`);
+      alert(`Error occurred: ${error.message}`);
       setIsSubmitting(false);
     }
   };
@@ -92,7 +92,7 @@ const LoginPage = () => {
       navigate('/confirm', {state: {email, password}});
     }
     catch (error) {
-      alert(`Error occured: ${error.message}`);
+      alert(`Error occurred: ${error.message}`);
       setIsSubmitting(false);
     }
     

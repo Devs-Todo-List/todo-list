@@ -1,39 +1,172 @@
-import { getCurrentUser } from 'aws-amplify/auth';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import Sidebar from './components/sidebar';
+import './App.scss';
+import Kanban from './components/kanban';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faBars } from '@fortawesome/free-solid-svg-icons';
+import CreateTaskModal from './components/CreateTaskModal';
+import ViewEditTaskModal from './components/ViewEditTaskModal';
+import { fetchAuthSession, getCurrentUser } from 'aws-amplify/auth';
+import {useNavigate} from 'react-router-dom';
 
-const HomePage = () => {
-  const [repos, setRepos] = useState([]);
+const user = {
+    firstName: 'John',
+    lastName: 'Doe'
+};
 
+function App() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    sessionStorage.clear();
-    navigate('/login');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [data, setData] = useState([]);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isViewEditModalOpen, setIsViewEditModalOpen] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskDescription, setNewTaskDescription] = useState('');
+  const [selectedSection, setSelectedSection] = useState('1');
+  const [newDueDate, setNewDueDate] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  useEffect(() => {
+      fetchAuthSession().then(response => {
+          const accessToken = response.tokens.accessToken;
+          
+          fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
+          {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              Authorization: `Bearer ${accessToken}`
+          }
+          })
+          .then(response => {
+              if(!response.ok)
+                  throw new Error("Error");
+
+              return response.json();
+          })
+          .then(data => setData(data))
+          .catch(error => console.log(error));
+          });  
+  }, []);
+
+  useEffect(() => {
+      if (isDarkMode) {
+          document.body.classList.add('dark-mode');
+      } else {
+          document.body.classList.remove('dark-mode');
+      }
+  }, [isDarkMode]);
+
+  const toggleMode = () => {
+      setIsDarkMode(prevMode => !prevMode);
   };
 
-  const handleGithubLogin = () => {
-    window.location.href = 'http://localhost:5000/auth/github';
-  }
+  const handleCreateTask = () => {
+      // const newTask = {
+      //     id: `task-${Date.now()}`,
+      //     title: newTaskTitle,
+      //     description: newTaskDescription
+      // };
 
-  const displayRepos = async () => {
-    const githubToken = localStorage.getItem('githubToken');
-    const username = localStorage.getItem('username');
-    const response = await fetch(`https://api.github.com/user/repos`,
-      {
-        headers: { Authorization: `token ${githubToken}`}
-      }
-    );
+      // const updatedData = data.map(section => {
+      //     if (section.id === selectedSection) {
+      //         return {
+      //             ...section,
+      //             tasks: [...section.tasks, newTask]
+      //         };
+      //     }
+      //     return section;
+      // });
 
-    const data = await response.json();
-    //console.log(data);
-    setRepos(data);
-  }
+      console.log(newTaskTitle);
+      // const des = newTaskDescription.slice(3,-4);
+      // console.log(des);
+      console.log(newDueDate);
+      console.log(selectedSection);
 
-  const getQueryParam = (param) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(param);
-  }
+      fetchAuthSession().then(response => {
+          const accessToken = response.tokens.accessToken;
+
+          fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task`,
+          {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  Accept: 'application/json',
+                  Authorization: `Bearer ${accessToken}`
+              },
+              body: JSON.stringify({
+                  title: newTaskTitle,
+                  description: newTaskDescription,
+                  dateCreated: new Date().toISOString,
+                  dueDate: newDueDate,
+                  userId: 1,
+                  statusId: selectedSection,
+                  taskTypeId: 1
+              })
+          });
+      });
+      
+      //setData(updatedData);
+      setNewTaskTitle('');
+      setNewTaskDescription('');
+      setNewDueDate(Date.now);
+      setIsCreateModalOpen(false);
+  };
+
+  const handleTaskClick = (task) => {
+      setSelectedTask(task);
+      setIsViewEditModalOpen(true);
+  };
+
+  const handleSaveTask = () => {
+      const updatedData = data.map(section => {
+          return {
+              ...section,
+              tasks: section.tasks.map(task => {
+                  if (task.taskId === selectedTask.taskId) {
+                      return selectedTask;
+                  }
+                  return task;
+              })
+          };
+      });
+      
+      fetchAuthSession().then(response => {
+          const accessToken = response.tokens.accessToken;
+
+          fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${selectedTask.taskId}`,
+          {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json',
+                  Accept: 'application/json',
+                  Authorization: `Bearer ${accessToken}`
+              },
+              body: JSON.stringify({
+                  taskId: selectedTask.taskId,
+                  title: selectedTask.title,
+                  description: selectedTask.description,
+                  dateCreated: selectedTask.dateCreated,
+                  dueDate: selectedTask.dueDate,
+                  userId: selectedTask.userId,
+                  statusId: selectedTask.statusId,
+                  taskTypeId: selectedTask.taskTypeId
+              })
+          });
+      });
+      
+
+      setData(updatedData);
+      setIsViewEditModalOpen(false);
+  };
+
+  const toggleDrawer = () => {
+      setIsDrawerOpen(prevState => !prevState);
+  };
 
   useEffect(() => {
     const isAuthenticated = async () => {
@@ -48,24 +181,56 @@ const HomePage = () => {
     isAuthenticated();
   }, [navigate]);
 
-  useEffect(() => {
-    console.log("Repos:", repos);
-  }, [repos])
-
   return (
-    <div>
-      <h1>Hello World</h1>
-      <p>See console log for Amazon Cognito user tokens.</p>
-      <button onClick={handleGithubLogin}>Connect Github Account</button>
-      <button onClick={displayRepos}>Show repos</button>
-      <button onClick={handleLogout}>Logout</button>
-      <div>
-        {repos.map((repo) => {
-          return <div key={repo.id}>{repo.full_name}</div>
-        })}
-      </div>
-    </div>
-  );
-};
+      <div style={{ padding: '50px' }}>
+          {!isDrawerOpen && (
+              <button className="burger-menu" onClick={toggleDrawer}>
+                  <FontAwesomeIcon icon={faBars} />
+              </button>
+          )}
+          <Sidebar 
+              isOpen={isDrawerOpen} 
+              toggleDrawer={toggleDrawer} 
+              toggleMode={toggleMode} 
+              isDarkMode={isDarkMode} 
+              user={user} 
+          />
+          <h1 style={{ marginBottom: '20px' }}>
+                  TodoZen
+          </h1>
+          <button 
+              className="create-task-button" 
+              onClick={() => setIsCreateModalOpen(true)}
+          >
+              <FontAwesomeIcon icon={faPlus} /> Create Task
+          </button>
+          <Kanban data={data} setData={setData} onTaskClick={handleTaskClick} />
+          {isCreateModalOpen && (
+              <CreateTaskModal 
+                  onClose={() => setIsCreateModalOpen(false)} 
+                  onCreate={handleCreateTask}
+                  newTaskTitle={newTaskTitle}
+                  setNewTaskTitle={setNewTaskTitle}
+                  newTaskDescription={newTaskDescription}
+                  setNewTaskDescription={setNewTaskDescription}
+                  selectedSection={selectedSection}
+                  setSelectedSection={setSelectedSection}
+                  newDueDate={newDueDate}
+                  setNewDueDate={setNewDueDate}
+                  sections={data}
 
-export default HomePage;
+              />
+          )}
+          {isViewEditModalOpen && selectedTask && (
+              <ViewEditTaskModal 
+                  onClose={() => setIsViewEditModalOpen(false)} 
+                  onSave={handleSaveTask}
+                  task={selectedTask}
+                  setTask={setSelectedTask}
+              />
+          )}
+      </div>
+  );
+}
+
+export default App;

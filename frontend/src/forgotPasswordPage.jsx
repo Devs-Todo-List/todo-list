@@ -31,7 +31,7 @@ const ForgotPasswordPage = () => {
       }
     }
     catch (error) {
-      alert(`Error occured: ${error.message}`);
+      alert(`Error occurred: ${error.message}`);
       navigate('/login');
     }
   }

@@ -24,7 +24,7 @@ const ConfirmSignUpPage = () => {
       }
     }
     catch(error) {
-      alert(`Error occured: ${error.message}`);
+      alert(`Error occurred: ${error.message}`);
     }
     // try {
     //   await fetch(`${import.meta.env.VITE_API_URL}/api/v1/Auth/confirmSignup`,

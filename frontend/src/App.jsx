@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './loginPage';
 import HomePage from './homePage';
-import BoardPage from './boardPage';
 import ConfirmSignUpPage from './confirmSignUpPage';
 import SetupMFAPage from './setupMFAPage';
 import ForgotPasswordPage from './forgotPasswordPage';
@@ -19,7 +18,6 @@ const App = () => {
         <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
         <Route path="/resetPassword" element={<ResetPasswordPage />} />
         <Route path="/home" element={<HomePage />} />
-        <Route path="/board" element={<BoardPage /> }/>
       </Routes>
     </BrowserRouter>
   );
