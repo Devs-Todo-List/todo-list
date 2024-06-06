@@ -6,14 +6,15 @@ import './kanban.scss';
 
 const Kanban = ({ data, setData, onTaskClick }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-
-    console.log("Kanban", data);
+    const [isLoading, setIsLoading] = useState(false);
 
     const onDragEnd = result => {
         if (!result.destination) return;
         const { source, destination } = result;
 
         if (source.droppableId !== destination.droppableId) {
+            setIsLoading(true); // Set loading to true
+
             const sourceColIndex = data.findIndex(e => e.id === source.droppableId);
             const destinationColIndex = data.findIndex(e => e.id === destination.droppableId);
 
@@ -35,8 +36,6 @@ const Kanban = ({ data, setData, onTaskClick }) => {
                 ...destinationCol,
                 tasks: destinationTask
             };
-
-            console.log(result);
 
             fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${result.draggableId}`,
             {
@@ -74,9 +73,14 @@ const Kanban = ({ data, setData, onTaskClick }) => {
                     })
                 });
             })
-            .catch(error => console.log(error));
-
-            setData(updatedData);
+            .then(() => {
+                setIsLoading(false);
+                setData(updatedData);
+            })
+            .catch(error => {
+                console.log(error);
+                setIsLoading(false);
+            });
         }
     };
 
@@ -114,6 +118,7 @@ const Kanban = ({ data, setData, onTaskClick }) => {
         <div {...handlers}>
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="kanban">
+                    {isLoading && <div className="loader">Loading...</div>}
                     {data.map((section, index) => (
                         <Droppable key={section.id} droppableId={section.id}>
                             {(provided) => (

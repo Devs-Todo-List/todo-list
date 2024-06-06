@@ -111,3 +111,25 @@
         width: 100%;
     }
 }
+.loader {
+    border: 1.6vw solid #f3f3f3; /* Light gray for the inactive part of the loader */
+    border-top: 1.6vw solid blue; /* Red for the active part of the loader */
+    border-radius: 50%;
+    width: 12vw;
+    height: 12vw;
+    animation: spin 2s linear infinite;
+    z-index: 1000;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+    .loader {
+        width: 20vw;
+        height: 20vw;
+        border-width: 2vw;
+    }
+}
