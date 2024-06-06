@@ -1,8 +1,6 @@
-using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using server;
 using server.Data;
 using server.Repositories;
 
@@ -29,9 +27,9 @@ builder.Services.AddScoped<TaskTypeRepository>();
 builder.Services.AddScoped<TaskRepository>();
 builder.Services.AddScoped<CommentRepository>();
 
-builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+builder.Services.AddCors(o => o.AddPolicy("MyPolicy", corsPolicyBuilder =>
 {
-    builder.WithOrigins("*")
+    corsPolicyBuilder.WithOrigins("http://localhost:5173", "https://devtodo.projects.bbdgrad.com")
         .AllowAnyMethod()
         .AllowAnyHeader();
 }));
@@ -40,7 +38,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         var userPoolId = Environment.GetEnvironmentVariable("USERPOOL_ID")!;
         opts.Authority = $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}";
-        opts.MetadataAddress = $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
+        opts.MetadataAddress =
+            $"https://cognito-idp.eu-west-1.amazonaws.com/{userPoolId}/.well-known/openid-configuration";
         opts.IncludeErrorDetails = true;
         opts.RequireHttpsMetadata = false;
         opts.TokenValidationParameters = new TokenValidationParameters
@@ -53,13 +52,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//     .AddJwtBearer();
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("admin", policy => policy.RequireClaim("cognito:groups", "admin"))
+    .AddPolicy("user", policy => policy.RequireClaim("cognito:groups", "user"));
 
-builder.Services.AddAuthorization(options => {
-    options.AddPolicy("admin", policy => policy.RequireClaim("cognito:groups", "admin"));
-    options.AddPolicy("user", policy => policy.RequireClaim("cognito:groups", "user"));
-});
+//Rate Limiting
+
 
 var app = builder.Build();
 
@@ -70,12 +68,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
-
-app.MapGet("/test", () => {
-    Console.WriteLine("Authentication working");
-});
-
+// app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("MyPolicy");

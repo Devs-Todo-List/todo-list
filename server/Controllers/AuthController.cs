@@ -40,6 +40,7 @@ namespace server.Controllers
                 var authResponse = await _provider.InitiateAuthAsync(authRequest);
                 if (authResponse.AuthenticationResult == null) return Unauthorized("Invalid username or password");
                 Console.WriteLine("Sign in successful");
+                await AddUser(authSignIn.username);
                 return Ok(authResponse);
 
             }
@@ -95,11 +96,7 @@ namespace server.Controllers
             {
                 await _provider.ConfirmSignUpAsync(confirmSignUpRequest);
                 Console.WriteLine("User confirmed successfully");
-                var user = new User()
-                {
-                    Email = authConfirmSignUpDto.username
-                };
-                await userRepository.Create(user);
+                await AddUser(authConfirmSignUpDto.username);
                 return Ok("User has been confirmed");
             }
             catch (Exception ex)
@@ -107,6 +104,17 @@ namespace server.Controllers
                 Console.WriteLine($"Error confirming sign up: {ex.Message}");
                 return BadRequest("Could not confirm user");
             }
+        }
+
+        private async Task AddUser(string email)
+        {
+            var userExist = await userRepository.Exists(u => u.Email == email);
+            if(userExist) return;
+            var user = new User()
+            {
+                Email = email
+            };
+            await userRepository.Create(user);
         }
         
 
