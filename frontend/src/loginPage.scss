@@ -69,6 +69,14 @@ body {
         &:hover {
           background: #6d94ff;
         }
+
+        &:disabled {
+          background: grey;
+        }
+
+        &:disabled:hover {
+          cursor: default;
+        }
       }
     }
   

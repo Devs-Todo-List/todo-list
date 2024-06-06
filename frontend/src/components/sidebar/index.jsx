@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle, faSignOutAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import ToggleButton from '../toggleButton';
 import { useNavigate } from 'react-router-dom';
 import './sidebar.scss';
+import { signOut } from 'aws-amplify/auth';
 
 const Sidebar = ({ isOpen, toggleDrawer, toggleMode, isDarkMode, user }) => {
     const sidebarRef = useRef(null);
@@ -15,9 +16,14 @@ const Sidebar = ({ isOpen, toggleDrawer, toggleMode, isDarkMode, user }) => {
     };
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-      sessionStorage.clear();
-      navigate('/login');
+    const handleLogout = async () => {
+      try {
+        await signOut();
+        navigate('/login');
+      }
+      catch(error) {
+        alert(`Error occurred: ${error.message}`);
+      }
     };
 
     useEffect(() => {
@@ -43,7 +49,7 @@ const Sidebar = ({ isOpen, toggleDrawer, toggleMode, isDarkMode, user }) => {
                     <div className="user-info">
                         <FontAwesomeIcon icon={faUserCircle} size="2x" />
                         <div className="user-name">
-                            {user ? `${user.firstName} ${user.lastName}` : 'Guest'}
+                            {`${user}`}
                         </div>
                     </div>
                     <button className="logout-btn" aria-label="Logout" onClick={handleLogout}>

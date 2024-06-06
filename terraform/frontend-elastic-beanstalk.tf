@@ -131,6 +131,18 @@ resource "aws_elastic_beanstalk_environment" "nodejs_env" {
     name      = "VITE_API_URL"
     value     = "https://devtodo-api.projects.bbdgrad.com"
   }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "VITE_USERPOOL_ID"
+    value     = aws_cognito_user_pool.TodoUserPool.id
+  }
+
+  setting {
+    namespace = "aws:elasticbeanstalk:application:environment"
+    name      = "VITE_COGNITO_CLIENTID"
+    value     = aws_cognito_user_pool_client.TodoList.id
+  }
 }
 
 resource "aws_wafv2_web_acl_association" "fe-waf-association" {

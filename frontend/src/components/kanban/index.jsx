@@ -3,11 +3,10 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import { useSwipeable } from 'react-swipeable';
 import Card from '../card';
 import './kanban.scss';
+import { fetchAuthSession } from 'aws-amplify/auth';
 
 const Kanban = ({ data, setData, onTaskClick }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
-
-    console.log("Kanban", data);
 
     const onDragEnd = result => {
         if (!result.destination) return;
@@ -36,45 +35,47 @@ const Kanban = ({ data, setData, onTaskClick }) => {
                 tasks: destinationTask
             };
 
-            console.log(result);
+            fetchAuthSession().then(response => {
+                const accessToken = response.tokens.accessToken;
 
-            fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${result.draggableId}`,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-                }
-            })
-            .then(response => {
-                if(!response.ok)
-                    throw new Error("Error");
-
-                return response.json();
-            })
-            .then(data => {
                 fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${result.draggableId}`,
                 {
-                    method: 'PUT',
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         Accept: 'application/json',
-                        Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`
-                    },
-                    body: JSON.stringify({
-                        taskId: data.taskId,
-                        title: data.title,
-                        description: data.description,
-                        dateCreated: data.dateCreated,
-                        dueDate: data.dueDate,
-                        userId: data.userId,
-                        statusId: destinationCol.id,
-                        taskTypeId: data.taskTypeId
-                    })
-                });
-            })
-            .catch(error => console.log(error));
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                })
+                .then(response => {
+                    if(!response.ok)
+                        throw new Error("Error");
+
+                    return response.json();
+                })
+                .then(data => {
+                    fetch(`${import.meta.env.VITE_API_URL}/api/v1/Task/${result.draggableId}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                            Authorization: `Bearer ${accessToken}`
+                        },
+                        body: JSON.stringify({
+                            taskId: data.taskId,
+                            title: data.title,
+                            description: data.description,
+                            dateCreated: data.dateCreated,
+                            dueDate: data.dueDate,
+                            userId: data.userId,
+                            statusId: destinationCol.id,
+                            taskTypeId: data.taskTypeId
+                        })
+                    });
+                })
+                .catch(error => console.log(error));
+            });
 
             setData(updatedData);
         }

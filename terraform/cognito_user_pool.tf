@@ -17,7 +17,7 @@ resource "aws_cognito_user_pool" "TodoUserPool" {
     email_sending_account = "COGNITO_DEFAULT"
   }
 
-  mfa_configuration = "OPTIONAL"
+  mfa_configuration = "ON"
   name              = "Todo List User Pool"
 
   password_policy {
